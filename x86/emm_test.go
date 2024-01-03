@@ -144,3 +144,55 @@ func TestEmmMinUint8(t *testing.T) {
 		t.Errorf("expect %v <> actual %v", expect, out)
 	}
 }
+
+func TestEmmAddInt16(t *testing.T) {
+	out := EmmAddInt16(
+		[8]int16{1, 2, 32767, -32768, 1, 1, -32768, 0},
+		[8]int16{1, 3, 1, 1, -32768, 32767, -1, -1},
+	)
+	expect := [8]int16{
+		2, 5, 32767, -32767, -32767, 32767, -32768, -1,
+	}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmSubInt16(t *testing.T) {
+	out := EmmSubInt16(
+		[8]int16{1, 2, 32767, -32768, 1, 1, -32768, 0},
+		[8]int16{1, 3, 1, 1, -32768, 32767, -1, -1},
+	)
+	expect := [8]int16{
+		0, -1, 32766, -32768, 32767, -32766, -32767, 1,
+	}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmMaxInt16(t *testing.T) {
+	out := EmmMaxInt16(
+		[8]int16{1, 2, 32767, -32768, 1, 1, -32768, 0},
+		[8]int16{1, 3, 1, 1, -32768, 32767, -1, -1},
+	)
+	expect := [8]int16{
+		1, 3, 32767, 1, 1, 32767, -1, 0,
+	}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmMinInt16(t *testing.T) {
+	out := EmmMinInt16(
+		[8]int16{1, 2, 32767, -32768, 1, 1, -32768, 0},
+		[8]int16{1, 3, 1, 1, -32768, 32767, -1, -1},
+	)
+	expect := [8]int16{
+		1, 2, 1, -32768, -32768, 1, -32768, -1,
+	}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
