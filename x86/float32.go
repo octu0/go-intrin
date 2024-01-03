@@ -158,3 +158,11 @@ func convertFloat32[T number](values []T) []float32 {
 	}
 	return out
 }
+
+func convertUint8[T number](values []T) []uint8 {
+	out := make([]uint8, len(values))
+	for i, v := range values {
+		out[i] = uint8(v)
+	}
+	return out
+}

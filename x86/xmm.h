@@ -129,8 +129,8 @@ static void xmm_bulk_convert_to_uint8(uint8_t *out, float *in, int size) {
     __m128 ma = _mm_setr_ps(in[i + 0], in[i + 1], in[i + 2], in[i + 3]);
     __m64 r = _mm_cvtps_pi8(ma);
     // TODO
-    r = _mm_slli_pi16(r, 1);
-    r = _mm_srai_pi16(r, 1);
+    //r = _mm_slli_pi16(r, 1);
+    //r = _mm_srai_pi16(r, 1);
     memcpy(out + i, &r, sizeof(unsigned char) * 4);
   }
 }
