@@ -207,7 +207,7 @@ static void xmm_tile4x4_sum(float *out, float *in, int size) {
     __m128 rg = _mm_add_ps(r, g);
     __m128 ba = _mm_add_ps(b, a);
     __m128 gray = _mm_add_ps(rg, ba);
-    _mm_stream_ps(out + p, gray);
+    _mm_store_ps(out + p, gray);
 
     i += 16;
     p += 4;
