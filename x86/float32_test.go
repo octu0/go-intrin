@@ -144,7 +144,7 @@ func init() {
 		}
 		println("go grayscale =", out)
 	}
-	if true {
+	if false {
 		img, err := pngToRGBA(pngImg)
 		if err != nil {
 			panic(err)
@@ -201,7 +201,27 @@ func BenchmarkGrayscaleFloat32(b *testing.B) {
 			_ = goGrayscaleFloat32(img)
 		}
 	})
-	b.Run("simd", func(tb *testing.B) {
+	b.Run("simd/small", func(tb *testing.B) {
+		img, err := pngToRGBA(pngImg)
+		if err != nil {
+			tb.Fatalf("%+v", err)
+		}
+		tb.ResetTimer()
+		for i := 0; i < tb.N; i += 1 {
+			_ = xmmGrayscaleFloat32_16(img)
+		}
+	})
+	b.Run("simd/medium", func(tb *testing.B) {
+		img, err := pngToRGBA(pngImg)
+		if err != nil {
+			tb.Fatalf("%+v", err)
+		}
+		tb.ResetTimer()
+		for i := 0; i < tb.N; i += 1 {
+			_ = xmmGrayscaleFloat32_tile(img)
+		}
+	})
+	b.Run("simd/full", func(tb *testing.B) {
 		img, err := pngToRGBA(pngImg)
 		if err != nil {
 			tb.Fatalf("%+v", err)

@@ -202,7 +202,7 @@ static void xmm_tile4x4_sum(float *out, float *in, int size) {
 }
 
 static void xmm_grayscale(uint8_t *out, uint8_t *in, int size) {
-  __m128 bt701 = _mm_setr_ps(0.2126f, 0.7152f, 0.0722f, 0.0f);
+  __m128 bt709 = _mm_setr_ps(0.2126f, 0.7152f, 0.0722f, 0.0f);
   uint8_t gray[8];
   for(int i = 0; i < size; i += 16) {
     __m64 m1 = _mm_setr_pi8(
