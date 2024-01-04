@@ -135,7 +135,7 @@ func BenchmarkFloat32(b *testing.B) {
 		tb.ResetTimer()
 		_ = float32SumNative(v)
 	})
-	b.Run("sum/xmm", func(tb *testing.B) {
+	b.Run("sum/simd", func(tb *testing.B) {
 		v := make([]float32, tb.N)
 		for i := 0; i < tb.N; i += 1 {
 			v[i] = float32(i)

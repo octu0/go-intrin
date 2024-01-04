@@ -87,28 +87,28 @@ func Float32AndNot(a, b [4]float32) [4]float32 {
 func Int8ToFloat32(values ...int8) []float32 {
 	initSize := len(values)
 	aligned := alignSlice(values, 4)
-	converted := XmmBulkConvertFromInt8(aligned, len(aligned))
+	converted := XmmBulkConvertInt8ToFloat32(aligned, len(aligned))
 	return converted[:initSize]
 }
 
 func Uint8ToFloat32(values ...uint8) []float32 {
 	initSize := len(values)
 	aligned := alignSlice(values, 4)
-	converted := XmmBulkConvertFromUint8(aligned, len(aligned))
+	converted := XmmBulkConvertUint8ToFloat32(aligned, len(aligned))
 	return converted[:initSize]
 }
 
 func Float32ToInt8(values ...float32) []int8 {
 	initSize := len(values)
 	aligned := alignSlice(values, 4)
-	converted := XmmBulkConvertToInt8(aligned, len(aligned))
+	converted := XmmBulkConvertFloat32ToInt8(aligned, len(aligned))
 	return converted[:initSize]
 }
 
 func Float32ToUint8(values ...float32) []uint8 {
 	initSize := len(values)
 	aligned := alignSlice(values, 4)
-	converted := XmmBulkConvertToUint8(aligned, len(aligned))
+	converted := XmmBulkConvertFloat32ToUint8(aligned, len(aligned))
 	return converted[:initSize]
 }
 
@@ -124,28 +124,12 @@ func Float32Sum(values ...float32) float32 {
 	}
 
 	aligned := alignSlice(values, 4)
-	return XmmBulkSum(aligned)
+	return XmmBulkSum(aligned, len(aligned))
 }
 
-func Float32SumBinary(values ...float32) float32 {
-	aligned := alignSlice(values, 4)
-	out := make([]float32, len(values))
-	for {
-		if len(aligned) <= 8 {
-			return float32SumNative(aligned)
-		}
-
-		half := len(aligned) / 2
-		head := aligned[:half]
-		tail := aligned[half:]
-		XmmBulkSum2(out, head, tail, half)
-		aligned = alignSlice(out[:half], 4)
-	}
-}
-
-func float32SumNative(a []float32) float32 {
+func float32SumNative(values []float32) float32 {
 	sum := float32(0.0)
-	for _, v := range a {
+	for _, v := range values {
 		sum += v
 	}
 	return sum

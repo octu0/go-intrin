@@ -90,55 +90,47 @@ static void xmm_andnot(float *out, float *a, float *b) {
   _mm_store_ps(out, r);
 }
 
-static void xmm_bulk_convert_from_int8(float *out, int8_t *in, int size) {
-  int i;
-  for(i = 0; i < size; i += 4) {
+static void xmm_bulk_convert_int8_to_float32(float *out, int8_t *in, int size) {
+  for(int i = 0; i < size; i += 4) {
     __m64 ma = _mm_setr_pi8(
       in[i + 0], in[i + 1], in[i + 2], in[i + 3],
       0, 0, 0, 0
     );
     __m128 r = _mm_cvtpi8_ps(ma);
-    _mm_store_ps(out + i, r);
+    _mm_stream_ps(out + i, r);
   }
 }
 
-static void xmm_bulk_convert_from_uint8(float *out, uint8_t *in, int size) {
-  int i;
-  for(i = 0; i < size; i += 4) {
+static void xmm_bulk_convert_uint8_to_float32(float *out, uint8_t *in, int size) {
+  for(int i = 0; i < size; i += 4) {
     __m64 ma = _mm_setr_pi8(
       in[i + 0], in[i + 1], in[i + 2], in[i + 3],
       0, 0, 0, 0
     );
     __m128 r = _mm_cvtpu8_ps(ma);
-    _mm_store_ps(out + i, r);
+    _mm_stream_ps(out + i, r);
   }
 }
 
-static void xmm_bulk_convert_to_int8(int8_t *out, float *in, int size) {
-  int i;
-  for(i = 0; i < size; i += 4) {
+static void xmm_bulk_convert_float32_to_int8(int8_t *out, float *in, int size) {
+  for(int i = 0; i < size; i += 4) {
     __m128 ma = _mm_setr_ps(in[i + 0], in[i + 1], in[i + 2], in[i + 3]);
     __m64 r = _mm_cvtps_pi8(ma);
     memcpy(out + i, &r, sizeof(char) * 4);
   }
 }
 
-static void xmm_bulk_convert_to_uint8(uint8_t *out, float *in, int size) {
-  int i;
-  for(i = 0; i < size; i += 4) {
+static void xmm_bulk_convert_float32_to_uint8(uint8_t *out, float *in, int size) {
+  for(int i = 0; i < size; i += 4) {
     __m128 ma = _mm_setr_ps(in[i + 0], in[i + 1], in[i + 2], in[i + 3]);
     __m64 r = _mm_cvtps_pi8(ma);
-    // TODO
-    //r = _mm_slli_pi16(r, 1);
-    //r = _mm_srai_pi16(r, 1);
     memcpy(out + i, &r, sizeof(unsigned char) * 4);
   }
 }
 
 static void xmm_bulk_sum(float *out, float *a, int size) {
   __m128 r = _mm_setr_ps(a[0], a[1], a[2], a[3]);
-  int i;
-  for(i = 4; i < size; i += 4) {
+  for(int i = 4; i < size; i += 4) {
     __m128 ma = _mm_setr_ps(a[i + 0], a[i + 1], a[i + 2], a[i + 3]);
     r = _mm_add_ps(ma, r);
   }
@@ -146,52 +138,47 @@ static void xmm_bulk_sum(float *out, float *a, int size) {
 }
 
 static void xmm_bulk_sum2(float *out, float *a, float *b, int size) {
-  int i;
-  for(i = 0; i < size; i += 4) {
+  for(int i = 0; i < size; i += 4) {
     __m128 ma = _mm_setr_ps(a[i + 0], a[i + 1], a[i + 2], a[i + 3]);
     __m128 mb = _mm_setr_ps(b[i + 0], b[i + 1], b[i + 2], b[i + 3]);
     __m128 r = _mm_add_ps(ma, mb);
-    _mm_store_ps(out + i, r);
+    _mm_stream_ps(out + i, r);
   }
 }
 
 static void xmm_bulk_add(float *out, float *base, float *in, int size) {
   __m128 mbase = _mm_setr_ps(base[0], base[1], base[2], base[3]);
-  int i;
-  for(i = 0; i < size; i += 4) {
+  for(int i = 0; i < size; i += 4) {
     __m128 min = _mm_setr_ps(in[i + 0], in[i + 1], in[i + 2], in[i + 3]);
     __m128 r = _mm_add_ps(min, mbase);
-    _mm_store_ps(out + i, r);
+    _mm_stream_ps(out + i, r);
   }
 }
 
 static void xmm_bulk_sub(float *out, float *base, float *in, int size) {
   __m128 mbase = _mm_setr_ps(base[0], base[1], base[2], base[3]);
-  int i;
-  for(i = 0; i < size; i += 4) {
+  for(int i = 0; i < size; i += 4) {
     __m128 min = _mm_setr_ps(in[i + 0], in[i + 1], in[i + 2], in[i + 3]);
     __m128 r = _mm_sub_ps(min, mbase);
-    _mm_store_ps(out + i, r);
+    _mm_stream_ps(out + i, r);
   }
 }
 
 static void xmm_bulk_mul(float *out, float *base, float *in, int size) {
   __m128 mbase = _mm_setr_ps(base[0], base[1], base[2], base[3]);
-  int i;
-  for(i = 0; i < size; i += 4) {
+  for(int i = 0; i < size; i += 4) {
     __m128 min = _mm_setr_ps(in[i + 0], in[i + 1], in[i + 2], in[i + 3]);
     __m128 r = _mm_mul_ps(min, mbase);
-    _mm_store_ps(out + i, r);
+    _mm_stream_ps(out + i, r);
   }
 }
 
 static void xmm_bulk_div(float *out, float *base, float *in, int size) {
   __m128 mbase = _mm_setr_ps(base[0], base[1], base[2], base[3]);
-  int i;
-  for(i = 0; i < size; i += 4) {
+  for(int i = 0; i < size; i += 4) {
     __m128 min = _mm_setr_ps(in[i + 0], in[i + 1], in[i + 2], in[i + 3]);
     __m128 r = _mm_div_ps(min, mbase);
-    _mm_store_ps(out + i, r);
+    _mm_stream_ps(out + i, r);
   }
 }
 
@@ -207,7 +194,7 @@ static void xmm_tile4x4_sum(float *out, float *in, int size) {
     __m128 rg = _mm_add_ps(r, g);
     __m128 ba = _mm_add_ps(b, a);
     __m128 gray = _mm_add_ps(rg, ba);
-    _mm_store_ps(out + p, gray);
+    _mm_stream_ps(out + p, gray);
 
     i += 16;
     p += 4;

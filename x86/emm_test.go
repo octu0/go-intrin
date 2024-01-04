@@ -209,3 +209,42 @@ func TestEmmMAddInt16(t *testing.T) {
 		t.Errorf("expect %v <> actual %v", expect, out)
 	}
 }
+
+func TestEmmAddUint16(t *testing.T) {
+	out := EmmAddUint16(
+		[8]uint16{1, 2, 32767, 65535, 1, 65535, 0, 0},
+		[8]uint16{1, 3, 1, 1, 65535, 65535, 0, 1},
+	)
+	expect := [8]uint16{
+		2, 5, 32768, 65535, 65535, 65535, 0, 1,
+	}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmSubUint16(t *testing.T) {
+	out := EmmSubUint16(
+		[8]uint16{0, 1, 1, 0, 65535, 65535, 1, 0},
+		[8]uint16{1, 2, 32767, 65535, 1, 65535, 0, 1},
+	)
+	expect := [8]uint16{
+		0, 0, 0, 0, 65534, 0, 1, 0,
+	}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmAvgUint16(t *testing.T) {
+	out := EmmAvgUint16(
+		[8]uint16{1, 2, 32767, 65535, 1, 65535, 0, 0},
+		[8]uint16{1, 3, 1, 1, 65535, 65535, 0, 1},
+	)
+	expect := [8]uint16{
+		1, 3, 16384, 32768, 32768, 65535, 0, 1,
+	}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}

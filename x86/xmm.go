@@ -137,9 +137,9 @@ func XmmAndNot(a, b [4]float32) [4]float32 {
 	return out
 }
 
-func XmmBulkConvertFromInt8(in []int8, size int) []float32 {
+func XmmBulkConvertInt8ToFloat32(in []int8, size int) []float32 {
 	out := make([]float32, size)
-	C.xmm_bulk_convert_from_int8(
+	C.xmm_bulk_convert_int8_to_float32(
 		(*C.float)(unsafe.Pointer(&out[0])),
 		(*C.int8_t)(unsafe.Pointer(&in[0])),
 		C.int(size),
@@ -147,9 +147,9 @@ func XmmBulkConvertFromInt8(in []int8, size int) []float32 {
 	return out
 }
 
-func XmmBulkConvertFromUint8(in []uint8, size int) []float32 {
+func XmmBulkConvertUint8ToFloat32(in []uint8, size int) []float32 {
 	out := make([]float32, size)
-	C.xmm_bulk_convert_from_uint8(
+	C.xmm_bulk_convert_uint8_to_float32(
 		(*C.float)(unsafe.Pointer(&out[0])),
 		(*C.uint8_t)(unsafe.Pointer(&in[0])),
 		C.int(size),
@@ -157,9 +157,9 @@ func XmmBulkConvertFromUint8(in []uint8, size int) []float32 {
 	return out
 }
 
-func XmmBulkConvertToInt8(in []float32, size int) []int8 {
+func XmmBulkConvertFloat32ToInt8(in []float32, size int) []int8 {
 	out := make([]int8, size)
-	C.xmm_bulk_convert_to_int8(
+	C.xmm_bulk_convert_float32_to_int8(
 		(*C.int8_t)(unsafe.Pointer(&out[0])),
 		(*C.float)(unsafe.Pointer(&in[0])),
 		C.int(size),
@@ -167,9 +167,9 @@ func XmmBulkConvertToInt8(in []float32, size int) []int8 {
 	return out
 }
 
-func XmmBulkConvertToUint8(in []float32, size int) []uint8 {
+func XmmBulkConvertFloat32ToUint8(in []float32, size int) []uint8 {
 	out := make([]uint8, size)
-	C.xmm_bulk_convert_to_uint8(
+	C.xmm_bulk_convert_float32_to_uint8(
 		(*C.uint8_t)(unsafe.Pointer(&out[0])),
 		(*C.float)(unsafe.Pointer(&in[0])),
 		C.int(size),
@@ -177,12 +177,12 @@ func XmmBulkConvertToUint8(in []float32, size int) []uint8 {
 	return out
 }
 
-func XmmBulkSum(a []float32) float32 {
+func XmmBulkSum(a []float32, size int) float32 {
 	out := [4]float32{}
 	C.xmm_bulk_sum(
 		(*C.float)(unsafe.Pointer(&out[0])),
 		(*C.float)(unsafe.Pointer(&a[0])),
-		C.int(len(a)),
+		C.int(size),
 	)
 	return out[0] + out[1] + out[2] + out[3]
 }
