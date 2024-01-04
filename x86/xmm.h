@@ -221,10 +221,10 @@ static void xmm_grayscale(uint8_t *out, uint8_t *in, int size) {
       in[i + 12], in[i + 13], in[i + 14], in[i + 15],
       0, 0, 0, 0
     );
-    __m128 rgba1 = _mm_mul_ps(_mm_cvtpu8_ps(m1), bt701);
-    __m128 rgba2 = _mm_mul_ps(_mm_cvtpu8_ps(m2), bt701);
-    __m128 rgba3 = _mm_mul_ps(_mm_cvtpu8_ps(m3), bt701);
-    __m128 rgba4 = _mm_mul_ps(_mm_cvtpu8_ps(m4), bt701);
+    __m128 rgba1 = _mm_mul_ps(_mm_cvtpu8_ps(m1), bt709);
+    __m128 rgba2 = _mm_mul_ps(_mm_cvtpu8_ps(m2), bt709);
+    __m128 rgba3 = _mm_mul_ps(_mm_cvtpu8_ps(m3), bt709);
+    __m128 rgba4 = _mm_mul_ps(_mm_cvtpu8_ps(m4), bt709);
 
     __m128 r = _mm_setr_ps(rgba1[0], rgba2[0], rgba3[0], rgba4[0]); // R
     __m128 g = _mm_setr_ps(rgba1[1], rgba2[1], rgba3[1], rgba4[1]); // G
