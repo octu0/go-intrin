@@ -249,3 +249,13 @@ func XmmTile4x4Sum(in []float32, size int) []float32 {
 	)
 	return out
 }
+
+func XmmRGBAGrayscale(in []byte, size int) []byte {
+	out := make([]byte, size)
+	C.xmm_grayscale(
+		(*C.uint8_t)(unsafe.Pointer(&out[0])),
+		(*C.uint8_t)(unsafe.Pointer(&in[0])),
+		C.int(size),
+	)
+	return out
+}

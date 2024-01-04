@@ -200,3 +200,72 @@ static void xmm_tile4x4_sum(float *out, float *in, int size) {
     p += 4;
   }
 }
+
+static void xmm_grayscale(uint8_t *out, uint8_t *in, int size) {
+  __m128 bt701 = _mm_setr_ps(0.2126f, 0.7152f, 0.0722f, 0.0f);
+  uint8_t gray[8];
+  for(int i = 0; i < size; i += 16) {
+    __m64 m1 = _mm_setr_pi8(
+      in[i + 0], in[i + 1], in[i + 2], in[i + 3],
+      0, 0, 0, 0
+    );
+    __m64 m2 = _mm_setr_pi8(
+      in[i + 4], in[i + 5], in[i + 6], in[i + 7],
+      0, 0, 0, 0
+    );
+    __m64 m3 = _mm_setr_pi8(
+      in[i + 8], in[i + 9], in[i + 10], in[i + 11],
+      0, 0, 0, 0
+    );
+    __m64 m4 = _mm_setr_pi8(
+      in[i + 12], in[i + 13], in[i + 14], in[i + 15],
+      0, 0, 0, 0
+    );
+    __m128 rgba1 = _mm_mul_ps(_mm_cvtpu8_ps(m1), bt701);
+    __m128 rgba2 = _mm_mul_ps(_mm_cvtpu8_ps(m2), bt701);
+    __m128 rgba3 = _mm_mul_ps(_mm_cvtpu8_ps(m3), bt701);
+    __m128 rgba4 = _mm_mul_ps(_mm_cvtpu8_ps(m4), bt701);
+
+    __m128 r = _mm_setr_ps(rgba1[0], rgba2[0], rgba3[0], rgba4[0]); // R
+    __m128 g = _mm_setr_ps(rgba1[1], rgba2[1], rgba3[1], rgba4[1]); // G
+    __m128 b = _mm_setr_ps(rgba1[2], rgba2[2], rgba3[2], rgba4[2]); // B
+
+    // gray = [rgba1,rgba2,rgba3,rgba4]
+    __m128 gray_float = _mm_add_ps(_mm_add_ps(r, g), b);
+
+    __m64 gray_u8 = _mm_cvtps_pi8(gray_float);
+    memcpy(&gray, &gray_u8, sizeof(__m64));
+
+    uint8_t tmp[16] = {
+      gray[0], gray[0], gray[0], 255,
+      gray[1], gray[1], gray[1], 255,
+      gray[2], gray[2], gray[2], 255,
+      gray[3], gray[3], gray[3], 255
+    };
+    memcpy(out + i, &tmp, 16);
+  }
+}
+
+static void xmm_grayscale_in(uint8_t *out, uint8_t *in, int size) {
+  float *fin = (float *) malloc(sizeof(float) * size);
+  xmm_bulk_convert_uint8_to_float32(fin, in, size);
+  float filter[4] = {0.2126f, 0.7152f, 0.0722f, 0.0f};
+  xmm_bulk_mul(fin, filter, fin, size);
+  float *tile = (float *) malloc(sizeof(float) * (size/4));
+  xmm_tile4x4_sum(tile, fin, size);
+  uint8_t *gray = (uint8_t *) malloc(sizeof(uint8_t) * (size/4));
+  xmm_bulk_convert_float32_to_uint8(gray, tile, (size/4));
+  free(fin);
+  free(tile);
+
+  int gray_offset = 0;
+  for(int i = 0; i < size; i += 4) {
+    __m64 ma = _mm_setr_pi8(
+      gray[gray_offset], gray[gray_offset], gray[gray_offset], -1,
+      0, 0, 0, 0
+    );
+    memcpy(out + i, &ma, sizeof(uint8_t) * 4);
+    gray_offset += 1;
+  }
+  free(gray);
+}

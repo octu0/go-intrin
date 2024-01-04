@@ -58,43 +58,50 @@ func goGrayscaleFloat32(src *image.NRGBA) *image.NRGBA {
 	return out
 }
 
-func xmmGrayscaleFloat32(src *image.NRGBA) *image.NRGBA {
+func xmmGrayscaleFloat32_16(src *image.NRGBA) *image.NRGBA {
 	data := Uint8ToFloat32(src.Pix...)
 
-	/*
-			f := Float32Filter{Base: [4]float32{0.2126, 0.7152, 0.0722, 0.0}}
-			filtered := f.Mul(data...)
-			pix := make([]byte, len(data))
-			for i := 0; i < len(data); i += 16 {
-				rg := Float32Add(
-					[4]float32{filtered[i+0+0], filtered[i+4+0], filtered[i+8+0], filtered[i+12+0]}, // R
-					[4]float32{filtered[i+0+1], filtered[i+4+1], filtered[i+8+1], filtered[i+12+1]}, // G
-				)
-				ba := Float32Add(
-					[4]float32{filtered[i+0+2], filtered[i+4+2], filtered[i+8+2], filtered[i+12+2]}, // B
-					[4]float32{filtered[i+0+3], filtered[i+4+3], filtered[i+8+3], filtered[i+12+3]}, // A
-				)
-		    out := Float32Add(rg, ba)
-		    data := Float32ToUint8(out[0], out[1], out[2], out[3])
-				pix[i+0+0] = data[0]  // R
-				pix[i+0+1] = data[0]  // G
-				pix[i+0+2] = data[0]  // B
-				pix[i+0+3] = 0xff     // A
-				pix[i+4+0] = data[1]  // R
-				pix[i+4+1] = data[1]  // G
-				pix[i+4+2] = data[1]  // B
-				pix[i+4+3] = 0xff     // A
-				pix[i+8+0] = data[2]  // R
-				pix[i+8+1] = data[2]  // G
-				pix[i+8+2] = data[2]  // B
-				pix[i+8+3] = 0xff     // A
-				pix[i+12+0] = data[3] // R
-				pix[i+12+1] = data[3] // G
-				pix[i+12+2] = data[3] // B
-				pix[i+12+3] = 0xff    // A
-			}
-	*/
+	f := Float32Filter{Base: [4]float32{0.2126, 0.7152, 0.0722, 0.0}}
+	filtered := f.Mul(data...)
+	pix := make([]byte, len(data))
+	for i := 0; i < len(data); i += 16 {
+		rg := Float32Add(
+			[4]float32{filtered[i+0+0], filtered[i+4+0], filtered[i+8+0], filtered[i+12+0]}, // R
+			[4]float32{filtered[i+0+1], filtered[i+4+1], filtered[i+8+1], filtered[i+12+1]}, // G
+		)
+		ba := Float32Add(
+			[4]float32{filtered[i+0+2], filtered[i+4+2], filtered[i+8+2], filtered[i+12+2]}, // B
+			[4]float32{filtered[i+0+3], filtered[i+4+3], filtered[i+8+3], filtered[i+12+3]}, // A
+		)
+		out := Float32Add(rg, ba)
+		data := Float32ToUint8(out[0], out[1], out[2], out[3])
+		pix[i+0+0] = data[0]  // R
+		pix[i+0+1] = data[0]  // G
+		pix[i+0+2] = data[0]  // B
+		pix[i+0+3] = 0xff     // A
+		pix[i+4+0] = data[1]  // R
+		pix[i+4+1] = data[1]  // G
+		pix[i+4+2] = data[1]  // B
+		pix[i+4+3] = 0xff     // A
+		pix[i+8+0] = data[2]  // R
+		pix[i+8+1] = data[2]  // G
+		pix[i+8+2] = data[2]  // B
+		pix[i+8+3] = 0xff     // A
+		pix[i+12+0] = data[3] // R
+		pix[i+12+1] = data[3] // G
+		pix[i+12+2] = data[3] // B
+		pix[i+12+3] = 0xff    // A
+	}
 
+	return &image.NRGBA{
+		Pix:    pix,
+		Stride: src.Stride,
+		Rect:   src.Rect,
+	}
+}
+
+func xmmGrayscaleFloat32_tile(src *image.NRGBA) *image.NRGBA {
+	data := Uint8ToFloat32(src.Pix...)
 	f := Float32Filter{Base: [4]float32{0.2126, 0.7152, 0.0722, 0.0}}
 	filtered := f.Mul(data...)
 	tiledGray := Float32Tile4Sum(filtered...)
@@ -110,6 +117,44 @@ func xmmGrayscaleFloat32(src *image.NRGBA) *image.NRGBA {
 		Pix:    pix,
 		Stride: src.Stride,
 		Rect:   src.Rect,
+	}
+}
+
+func xmmGrayscaleFloat32(src *image.NRGBA) *image.NRGBA {
+	initSize := len(src.Pix)
+	aligned := alignSlice(src.Pix, 16)
+	pix := XmmRGBAGrayscale(aligned, len(aligned))
+	return &image.NRGBA{
+		Pix:    pix[:initSize],
+		Stride: src.Stride,
+		Rect:   src.Rect,
+	}
+}
+
+func init() {
+	if false {
+		img, err := pngToRGBA(pngImg)
+		if err != nil {
+			panic(err)
+		}
+		a := goGrayscaleFloat32(img)
+		out, err := saveImage(a)
+		if err != nil {
+			panic(err)
+		}
+		println("go grayscale =", out)
+	}
+	if true {
+		img, err := pngToRGBA(pngImg)
+		if err != nil {
+			panic(err)
+		}
+		a := xmmGrayscaleFloat32(img)
+		out, err := saveImage(a)
+		if err != nil {
+			panic(err)
+		}
+		println("xmm grayscale =", out)
 	}
 }
 
@@ -151,38 +196,21 @@ func BenchmarkGrayscaleFloat32(b *testing.B) {
 		if err != nil {
 			tb.Fatalf("%+v", err)
 		}
-		/*
-		   a := goGrayscaleFloat32(img)
-		   out, err := saveImage(a)
-		   if err != nil {
-		     tb.Fatalf("%+v", err)
-		   }
-		   println("go grayscale =", out)
-		*/
 		tb.ResetTimer()
 		for i := 0; i < tb.N; i += 1 {
 			_ = goGrayscaleFloat32(img)
 		}
 	})
-	b.Run("xmm", func(tb *testing.B) {
+	b.Run("simd", func(tb *testing.B) {
 		img, err := pngToRGBA(pngImg)
 		if err != nil {
 			tb.Fatalf("%+v", err)
 		}
-		/*
-		   a := xmmGrayscaleFloat32(img)
-		   out, err := saveImage(a)
-		   if err != nil {
-		     tb.Fatalf("%+v", err)
-		   }
-		   println("xmm grayscale =", out)
-		*/
 		tb.ResetTimer()
 		for i := 0; i < tb.N; i += 1 {
 			_ = xmmGrayscaleFloat32(img)
 		}
 	})
-
 }
 
 func TestFloat32Filter(t *testing.T) {
