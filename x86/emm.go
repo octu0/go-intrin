@@ -166,6 +166,115 @@ func EmmAvgUint16(a, b [8]uint16) [8]uint16 {
 	return out
 }
 
+func EmmAddFloat64(a, b [2]float64) [2]float64 {
+	out := [2]float64{}
+	C.emm_add_float64(
+		(*C.double)(unsafe.Pointer(&out[0])),
+		(*C.double)(unsafe.Pointer(&a[0])),
+		(*C.double)(unsafe.Pointer(&b[0])),
+	)
+	return out
+}
+
+func EmmSubFloat64(a, b [2]float64) [2]float64 {
+	out := [2]float64{}
+	C.emm_sub_float64(
+		(*C.double)(unsafe.Pointer(&out[0])),
+		(*C.double)(unsafe.Pointer(&a[0])),
+		(*C.double)(unsafe.Pointer(&b[0])),
+	)
+	return out
+}
+
+func EmmMulFloat64(a, b [2]float64) [2]float64 {
+	out := [2]float64{}
+	C.emm_mul_float64(
+		(*C.double)(unsafe.Pointer(&out[0])),
+		(*C.double)(unsafe.Pointer(&a[0])),
+		(*C.double)(unsafe.Pointer(&b[0])),
+	)
+	return out
+}
+
+func EmmDivFloat64(a, b [2]float64) [2]float64 {
+	out := [2]float64{}
+	C.emm_div_float64(
+		(*C.double)(unsafe.Pointer(&out[0])),
+		(*C.double)(unsafe.Pointer(&a[0])),
+		(*C.double)(unsafe.Pointer(&b[0])),
+	)
+	return out
+}
+
+func EmmSqrtFloat64(a [2]float64) [2]float64 {
+	out := [2]float64{}
+	C.emm_sqrt_float64(
+		(*C.double)(unsafe.Pointer(&out[0])),
+		(*C.double)(unsafe.Pointer(&a[0])),
+	)
+	return out
+}
+
+func EmmMaxFloat64(a, b [2]float64) [2]float64 {
+	out := [2]float64{}
+	C.emm_max_float64(
+		(*C.double)(unsafe.Pointer(&out[0])),
+		(*C.double)(unsafe.Pointer(&a[0])),
+		(*C.double)(unsafe.Pointer(&b[0])),
+	)
+	return out
+}
+
+func EmmMinFloat64(a, b [2]float64) [2]float64 {
+	out := [2]float64{}
+	C.emm_min_float64(
+		(*C.double)(unsafe.Pointer(&out[0])),
+		(*C.double)(unsafe.Pointer(&a[0])),
+		(*C.double)(unsafe.Pointer(&b[0])),
+	)
+	return out
+}
+
+func EmmAndFloat64(a, b [2]float64) [2]float64 {
+	out := [2]float64{}
+	C.emm_and_float64(
+		(*C.double)(unsafe.Pointer(&out[0])),
+		(*C.double)(unsafe.Pointer(&a[0])),
+		(*C.double)(unsafe.Pointer(&b[0])),
+	)
+	return out
+}
+
+func EmmOrFloat64(a, b [2]float64) [2]float64 {
+	out := [2]float64{}
+	C.emm_or_float64(
+		(*C.double)(unsafe.Pointer(&out[0])),
+		(*C.double)(unsafe.Pointer(&a[0])),
+		(*C.double)(unsafe.Pointer(&b[0])),
+	)
+	return out
+}
+
+func EmmXorFloat64(a, b [2]float64) [2]float64 {
+	out := [2]float64{}
+	C.emm_or_float64(
+		(*C.double)(unsafe.Pointer(&out[0])),
+		(*C.double)(unsafe.Pointer(&a[0])),
+		(*C.double)(unsafe.Pointer(&b[0])),
+	)
+	return out
+}
+
+func EmmAndNotFloat64(a, b [2]float64) [2]float64 {
+	out := [2]float64{}
+	C.emm_andnot_float64(
+		(*C.double)(unsafe.Pointer(&out[0])),
+		(*C.double)(unsafe.Pointer(&a[0])),
+		(*C.double)(unsafe.Pointer(&b[0])),
+	)
+	return out
+}
+
 func EmmBulkSumInt8(in []int8, size int) int8 {
 	out := [16]int8{}
 	C.emm_bulk_sum_int8(
@@ -229,6 +338,26 @@ func EmmBulkConvertFloat32ToInt32(in []float32, size int) []int32 {
 	C.emm_bulk_convert_float32_to_int32(
 		(*C.int32_t)(unsafe.Pointer(&out[0])),
 		(*C.float)(unsafe.Pointer(&in[0])),
+		C.int(size),
+	)
+	return out
+}
+
+func EmmBulkConvertInt32ToFloat64(in []int32, size int) []float64 {
+	out := make([]float64, size)
+	C.emm_bulk_convert_int32_to_float64(
+		(*C.double)(unsafe.Pointer(&out[0])),
+		(*C.int32_t)(unsafe.Pointer(&in[0])),
+		C.int(size),
+	)
+	return out
+}
+
+func EmmBulkConvertFloat64ToInt32(in []float64, size int) []int32 {
+	out := make([]int32, size)
+	C.emm_bulk_convert_float64_to_int32(
+		(*C.int32_t)(unsafe.Pointer(&out[0])),
+		(*C.double)(unsafe.Pointer(&in[0])),
 		C.int(size),
 	)
 	return out

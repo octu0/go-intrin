@@ -3,6 +3,7 @@ package x86
 import (
 	"reflect"
 	"testing"
+	"unsafe"
 )
 
 func TestEmmAddInt8(t *testing.T) {
@@ -246,5 +247,163 @@ func TestEmmAvgUint16(t *testing.T) {
 	}
 	if reflect.DeepEqual(expect, out) != true {
 		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmAddFloat64(t *testing.T) {
+	a := [2]float64{-1.1, 5.2}
+	b := [2]float64{-100.0, 20.0}
+	out := EmmAddFloat64(a, b)
+
+	expect := [2]float64{-101.1, 25.2}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmSubFloat64(t *testing.T) {
+	a := [2]float64{-1.1, 5.2}
+	b := [2]float64{-100.0, 20.0}
+	out := EmmSubFloat64(a, b)
+
+	expect := [2]float64{98.9, -14.8}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmMulFloat64(t *testing.T) {
+	a := [2]float64{-1.1, 5.2}
+	b := [2]float64{-100.0, 20.0}
+	out := EmmMulFloat64(a, b)
+
+	expect := [2]float64{110.00000000000001, 104.0}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmDivFloat64(t *testing.T) {
+	a := [2]float64{-1.1, 5.2}
+	b := [2]float64{-100.0, 20.0}
+	out := EmmDivFloat64(a, b)
+
+	expect := [2]float64{0.011000000000000001, 0.26}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmSqrtFloat64(t *testing.T) {
+	a := [2]float64{2.0, 4.0}
+	out := EmmSqrtFloat64(a)
+
+	expect := [2]float64{1.4142135623730951, 2}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmMinFloat64(t *testing.T) {
+	a := [2]float64{-1.1, 5.2}
+	b := [2]float64{-100.0, 20.0}
+	out := EmmMinFloat64(a, b)
+
+	expect := [2]float64{-100.0, 5.2}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmMaxFloat64(t *testing.T) {
+	a := [2]float64{-1.1, 5.2}
+	b := [2]float64{-100.0, 20.0}
+	out := EmmMaxFloat64(a, b)
+
+	expect := [2]float64{-1.1, 20.0}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmAndFloat64(t *testing.T) {
+	ua := [2]uint64{
+		0b0_00000000001_0000000000000000000000000000000000000000000000000000,
+		0b0_00011000001_0000000000000000000000000000000000000000000000000000,
+	}
+	ub := [2]uint64{
+		0b0_00000000011_0000000000000000000000000000000000000000000000000000,
+		0b0_00010000011_0000000000000000000000000000000000000000000000000000,
+	}
+	ue := [2]uint64{
+		0b0_00000000001_0000000000000000000000000000000000000000000000000000,
+		0b0_00010000001_0000000000000000000000000000000000000000000000000000,
+	}
+
+	a := *(*[2]float64)(unsafe.Pointer(&ua[0]))
+	b := *(*[2]float64)(unsafe.Pointer(&ub[0]))
+	e := *(*[2]float64)(unsafe.Pointer(&ue[0]))
+
+	out := EmmAndFloat64(a, b)
+	if reflect.DeepEqual(e, out) != true {
+		t.Errorf("expect %v <> actual %v", e, out)
+	}
+}
+
+func TestEmmOrFloat64(t *testing.T) {
+	ua := [2]uint64{
+		0b0_00000000001_0000000000000000000000000000000000000000000000000000,
+		0b0_00011000001_0000000000000000000000000000000000000000000000000000,
+	}
+	ub := [2]uint64{
+		0b0_00000000011_0000000000000000000000000000000000000000000000000000,
+		0b0_00010000011_0000000000000000000000000000000000000000000000000000,
+	}
+	ue := [2]uint64{
+		0b0_00000000011_0000000000000000000000000000000000000000000000000000,
+		0b0_00011000011_0000000000000000000000000000000000000000000000000000,
+	}
+
+	a := *(*[2]float64)(unsafe.Pointer(&ua[0]))
+	b := *(*[2]float64)(unsafe.Pointer(&ub[0]))
+	e := *(*[2]float64)(unsafe.Pointer(&ue[0]))
+
+	out := EmmOrFloat64(a, b)
+	if reflect.DeepEqual(e, out) != true {
+		t.Errorf("expect %v <> actual %v", e, out)
+	}
+}
+
+func TestEmmXorFloat64(t *testing.T) {
+	a := [2]float64{0.123, 1.235}
+	b := [2]float64{1.0, 0.1}
+	out := EmmXorFloat64(a, b)
+	expect := [2]float64{1.968, 1.7411192570869989}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestEmmAndNotFloat64(t *testing.T) {
+	ua := [2]uint64{
+		0b0_00000000001_0000000000000000000000000000000000000000000000000000,
+		0b0_00011000001_0000000000000000000000000000000000000000000000000000,
+	}
+	ub := [2]uint64{
+		0b0_00000000011_0000000000000000000000000000000000000000000000000000,
+		0b0_00010000011_0000000000000000000000000000000000000000000000000000,
+	}
+	ue := [2]uint64{
+		0b0_00000000010_0000000000000000000000000000000000000000000000000000,
+		0b0_00000000010_0000000000000000000000000000000000000000000000000000,
+	}
+
+	a := *(*[2]float64)(unsafe.Pointer(&ua[0]))
+	b := *(*[2]float64)(unsafe.Pointer(&ub[0]))
+	e := *(*[2]float64)(unsafe.Pointer(&ue[0]))
+
+	out := EmmAndNotFloat64(a, b)
+	if reflect.DeepEqual(e, out) != true {
+		t.Errorf("expect %v <> actual %v", e, out)
 	}
 }

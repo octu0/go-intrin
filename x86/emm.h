@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <string.h>
 #include <emmintrin.h>
 
 static void emm_add_int8(int8_t *out, int8_t *a, int8_t *b) {
@@ -232,6 +233,82 @@ static void emm_avg_uint16(uint16_t *out, uint16_t *a, uint16_t *b) {
   _mm_storeu_si128((__m128i *) out, r);
 }
 
+static void emm_add_float64(double *out, double *a, double *b) {
+  __m128d ma = _mm_setr_pd(a[0], a[1]);
+  __m128d mb = _mm_setr_pd(b[0], b[1]);
+  __m128d r = _mm_add_pd(ma, mb);
+  _mm_storeu_pd(out, r);
+}
+
+static void emm_sub_float64(double *out, double *a, double *b) {
+  __m128d ma = _mm_setr_pd(a[0], a[1]);
+  __m128d mb = _mm_setr_pd(b[0], b[1]);
+  __m128d r = _mm_sub_pd(ma, mb);
+  _mm_storeu_pd(out, r);
+}
+
+static void emm_mul_float64(double *out, double *a, double *b) {
+  __m128d ma = _mm_setr_pd(a[0], a[1]);
+  __m128d mb = _mm_setr_pd(b[0], b[1]);
+  __m128d r = _mm_mul_pd(ma, mb);
+  _mm_storeu_pd(out, r);
+}
+
+static void emm_div_float64(double *out, double *a, double *b) {
+  __m128d ma = _mm_setr_pd(a[0], a[1]);
+  __m128d mb = _mm_setr_pd(b[0], b[1]);
+  __m128d r = _mm_div_pd(ma, mb);
+  _mm_storeu_pd(out, r);
+}
+
+static void emm_sqrt_float64(double *out, double *a) {
+  __m128d ma = _mm_setr_pd(a[0], a[1]);
+  __m128d r = _mm_sqrt_pd(ma);
+  _mm_storeu_pd(out, r);
+}
+
+static void emm_max_float64(double *out, double *a, double *b) {
+  __m128d ma = _mm_setr_pd(a[0], a[1]);
+  __m128d mb = _mm_setr_pd(b[0], b[1]);
+  __m128d r = _mm_max_pd(ma, mb);
+  _mm_storeu_pd(out, r);
+}
+
+static void emm_min_float64(double *out, double *a, double *b) {
+  __m128d ma = _mm_setr_pd(a[0], a[1]);
+  __m128d mb = _mm_setr_pd(b[0], b[1]);
+  __m128d r = _mm_min_pd(ma, mb);
+  _mm_storeu_pd(out, r);
+}
+
+static void emm_and_float64(double *out, double *a, double *b) {
+  __m128d ma = _mm_setr_pd(a[0], a[1]);
+  __m128d mb = _mm_setr_pd(b[0], b[1]);
+  __m128d r = _mm_and_pd(ma, mb);
+  _mm_storeu_pd(out, r);
+}
+
+static void emm_or_float64(double *out, double *a, double *b) {
+  __m128d ma = _mm_setr_pd(a[0], a[1]);
+  __m128d mb = _mm_setr_pd(b[0], b[1]);
+  __m128d r = _mm_or_pd(ma, mb);
+  _mm_storeu_pd(out, r);
+}
+
+static void emm_xor_float64(double *out, double *a, double *b) {
+  __m128d ma = _mm_setr_pd(a[0], a[1]);
+  __m128d mb = _mm_setr_pd(b[0], b[1]);
+  __m128d r = _mm_xor_pd(ma, mb);
+  _mm_storeu_pd(out, r);
+}
+
+static void emm_andnot_float64(double *out, double *a, double *b) {
+  __m128d ma = _mm_setr_pd(a[0], a[1]);
+  __m128d mb = _mm_setr_pd(b[0], b[1]);
+  __m128d r = _mm_andnot_pd(ma, mb);
+  _mm_storeu_pd(out, r);
+}
+
 static void emm_bulk_sum_int8(int8_t *out, int8_t *in, int size) {
   __m128i r = _mm_setr_epi8(
     in[0],  in[1],  in[2],  in[3],
@@ -313,5 +390,21 @@ static void emm_bulk_convert_float32_to_int32(int32_t *out, float *in, int size)
     __m128 ma = _mm_setr_ps(in[i + 0], in[i + 1], in[i + 2], in[i + 3]);
     __m128i r = _mm_cvtps_epi32(ma);
     _mm_stream_si128((__m128i *) out + i, r);
+  }
+}
+
+static void emm_bulk_convert_int32_to_float64(double *out, int32_t *in, int size) {
+  for(int i = 0; i < size; i += 2) {
+    __m64 ma = _mm_setr_pi32(in[i + 0], in[i + 1]);
+    __m128d r = _mm_cvtpi32_pd(ma);
+    _mm_storeu_pd(out + i, r);
+  }
+}
+
+static void emm_bulk_convert_float64_to_int32(int32_t *out, double *in, int size) {
+  for(int i = 0; i < size; i += 2) {
+    __m128d ma = _mm_setr_pd(in[i + 0], in[i + 1]);
+    __m64 r = _mm_cvtpd_pi32(ma);
+    memcpy(out + i, &r, sizeof(int32_t) * 2);
   }
 }
