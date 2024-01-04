@@ -120,7 +120,13 @@ func EmmMinInt16(a, b [8]int16) [8]int16 {
 	return out
 }
 
-func EmmMaddInt16(a, b [8]int16) [4]int32 {
+//	[4]int32{
+//	  (a[0] * b[0]) + (a[1] * b[1]),
+//	  (a[2] * b[2]) + (a[3] * b[3]),
+//	  (a[4] * b[4]) + (a[5] * b[5]),
+//	  (a[6] * b[6]) + (a[7] * b[7]),
+//	}
+func EmmMAddInt16(a, b [8]int16) [4]int32 {
 	out := [4]int32{}
 	C.emm_madd_int16(
 		(*C.int32_t)(unsafe.Pointer(&out[0])),

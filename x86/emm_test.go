@@ -196,3 +196,16 @@ func TestEmmMinInt16(t *testing.T) {
 		t.Errorf("expect %v <> actual %v", expect, out)
 	}
 }
+
+func TestEmmMAddInt16(t *testing.T) {
+	out := EmmMAddInt16(
+		[8]int16{1, 2, 3, -1, 32767, -32768, -1, -1},
+		[8]int16{1, 5, 2, 0, 1, -1, 0, -1},
+	)
+	expect := [4]int32{
+		11, 6, 65535, 1,
+	}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
