@@ -269,15 +269,3 @@ static void xmm_grayscale_in(uint8_t *out, uint8_t *in, int size) {
   }
   free(gray);
 }
-
-__m128 xmm_setr_ps(float a0, float a1, float a2, float a3) {
-  return _mm_setr_ps(a0, a1, a2, a3);
-}
-
-__m128 xmm_add_ps(__m128 a, __m128 b) {
-  return _mm_add_ps(a, b);
-}
-
-void xmm_store_ps(float *out, __m128 r) {
-  _mm_store_ps(out, r);
-}
