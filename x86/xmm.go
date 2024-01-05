@@ -10,6 +10,41 @@ import (
 	"unsafe"
 )
 
+//go:linkname __mm_setr_ps xmm_setr_ps
+//go:noescape
+func __mm_setr_ps(C.float, C.float, C.float, C.float) C.__m128
+
+//go:linkname __mm_add_ps xmm_add_ps
+//go:noescape
+func __mm_add_ps(C.__m128, C.__m128) C.__m128
+
+//go:linkname __mm_store_ps xmm_store_ps
+//go:noescape
+func __mm_store_ps(*C.float, C.__m128)
+
+func __xmmAdd(a, b [4]float32) [4]float32 {
+	ma := __mm_setr_ps(
+		C.float(a[0]),
+		C.float(a[1]),
+		C.float(a[2]),
+		C.float(a[3]),
+	)
+	mb := __mm_setr_ps(
+		C.float(b[0]),
+		C.float(b[1]),
+		C.float(b[2]),
+		C.float(b[3]),
+	)
+	r := __mm_add_ps(ma, mb)
+
+	out := [4]float32{}
+	__mm_store_ps(
+		(*C.float)(unsafe.Pointer(&out[0])),
+		r,
+	)
+	return out
+}
+
 func xmmAdd(a, b [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_add(
