@@ -235,6 +235,28 @@ static void simd_grayscale(uint8_t *out, uint8_t *in, int size) {
 }
 ```
 
+## enable FMA
+
+`-mfma` cannot be specified for Cgo's CFLAGS by default.
+
+Enable it like the following command.
+
+```
+$ go env -w "CGO_CFLAGS_ALLOW=-mfma"
+```
+
+And, `go build -tags fma` to build
+
+```
+$ go build -tags fma github.com/octu0/go-intrin
+```
+
+Testing
+
+```
+$ go test --tags fma -v ./x86/
+```
+
 # License
 
 MIT, see LICENSE file for details.
