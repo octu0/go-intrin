@@ -254,7 +254,7 @@ $ go build -tags fma github.com/octu0/go-intrin
 Testing
 
 ```
-$ go test --tags fma -v ./x86/
+$ go test -tags fma -v ./x86/
 ```
 
 # License
