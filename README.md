@@ -113,7 +113,6 @@ BenchmarkInt8/sum/simd-4        	1000000000	         0.08489 ns/op
 Linux & Xeon
 
 ```
-$ go test -bench=BenchmarkFloat32 -v ./x86/
 goos: linux
 goarch: amd64
 pkg: github.com/octu0/go-intrin/x86
@@ -134,14 +133,13 @@ pkg: github.com/octu0/go-intrin/x86
 cpu: Intel(R) Xeon(R) W-11955M CPU @ 2.60GHz
 BenchmarkGrayscale
 BenchmarkGrayscale/go
-BenchmarkGrayscale/go-16           1923    596976 ns/op
+BenchmarkGrayscale/go-16            1923    596976 ns/op
 BenchmarkGrayscale/simd/small
-BenchmarkGrayscale/simd/small-16    100  10063526 ns/op
+BenchmarkGrayscale/simd/small-16    100   10063526 ns/op
 BenchmarkGrayscale/simd/medium
-BenchmarkGrayscale/simd/medium-16  1087   1112508 ns/op
+BenchmarkGrayscale/simd/medium-16   1087   1112508 ns/op
 BenchmarkGrayscale/simd/full
-BenchmarkGrayscale/simd/full-16    3070    382772 ns/op
-PASS
+BenchmarkGrayscale/simd/full-16     3070    382772 ns/op
 ```
 
 The Go code is as below:
