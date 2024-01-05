@@ -63,3 +63,31 @@ func uint8SumNative(values []uint8) uint8 {
 	}
 	return sum
 }
+
+func Int8ToFloat32(values ...int8) []float32 {
+	initSize := len(values)
+	aligned := alignSlice(values, 4)
+	converted := xmmBulkConvertInt8ToFloat32(aligned, len(aligned))
+	return converted[:initSize]
+}
+
+func Uint8ToFloat32(values ...uint8) []float32 {
+	initSize := len(values)
+	aligned := alignSlice(values, 4)
+	converted := xmmBulkConvertUint8ToFloat32(aligned, len(aligned))
+	return converted[:initSize]
+}
+
+func Float32ToInt8(values ...float32) []int8 {
+	initSize := len(values)
+	aligned := alignSlice(values, 4)
+	converted := xmmBulkConvertFloat32ToInt8(aligned, len(aligned))
+	return converted[:initSize]
+}
+
+func Float32ToUint8(values ...float32) []uint8 {
+	initSize := len(values)
+	aligned := alignSlice(values, 4)
+	converted := xmmBulkConvertFloat32ToUint8(aligned, len(aligned))
+	return converted[:initSize]
+}
