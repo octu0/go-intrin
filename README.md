@@ -16,7 +16,7 @@ go get github.com/octu0/go-intrin
 
 ## Example
 
-### float32
+### Float32/Float64
 
 ```go
 import "github.com/octu0/go-intrin/x86"
@@ -42,9 +42,23 @@ func Sub() {
     r[2] // -11.0
     r[3] // -3
 }
+
+func Mul() {
+    a := [2]float64{1.0, -1.0}
+    b := [2]float64{-2.0, -5.0}
+
+    _ = x86.Float64Mul(a, b)
+}
+
+func Div() {
+	a := [4]float64{-1.1, 5.2, 3.0, 4.2}
+	b := [4]float64{-100.0, 20.0, 2.0, 2.0}
+
+    _ = x86.Float64Div4(a, b)
+}
 ```
 
-### Int8/Int16/Uint8/Uint16
+### Int8/Int16/Uint8/Uint16/Int32
 
 ```go
 import "github.com/octu0/go-intrin/x86"
@@ -58,13 +72,13 @@ func Add() {
       11, 12, 13, 14, 15, 16, 17, 18,
       100, 125, 126, -128, -124, 127, -2, -3,
     }
-    r := x86.Int8Add(a, b)
+    _ = x86.Int8Add(a, b)
 }
 
 func Sub() {
     a := [8]int16{1, 2, 32767, -32768, 1, 1, -32768, 0}
     b := [8]int16{1, 3, 1, 1, -32768, 32767, -1, -1}
-    r := x86.Int16Sub(a, b)
+    _ = x86.Int16Sub(a, b)
 }
 
 func Max() {
@@ -76,13 +90,18 @@ func Max() {
       0, 1, 10, 255, 254, 0, 7, 8,
       255, 251, 255, 1, 128, 7, 6, 9,
     }
-    r := x86.Uint8Max(a, b)
+    _ = x86.Uint8Max(a, b)
 }
 
 func Avg() {
     a := [8]uint16{1, 2, 32767, 65535, 1, 65535, 0, 0}
     b := [8]uint16{1, 3, 1, 1, 65535, 65535, 0, 1}
-    r := x86.Uint8Avg(a, b)
+    _ = x86.Uint8Avg(a, b)
+}
+
+func Abs() {
+    a := [8]int32{1, -2, -3, -100, -255, 1024, 777, -888},
+    _ = x86.Int32Abs(a)
 }
 ```
 
