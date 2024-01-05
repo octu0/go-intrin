@@ -10,7 +10,7 @@ import (
 	"unsafe"
 )
 
-func XmmAdd(a, b [4]float32) [4]float32 {
+func xmmAdd(a, b [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_add(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -20,7 +20,7 @@ func XmmAdd(a, b [4]float32) [4]float32 {
 	return out
 }
 
-func XmmSub(a, b [4]float32) [4]float32 {
+func xmmSub(a, b [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_sub(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -30,7 +30,7 @@ func XmmSub(a, b [4]float32) [4]float32 {
 	return out
 }
 
-func XmmMul(a, b [4]float32) [4]float32 {
+func xmmMul(a, b [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_mul(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -40,7 +40,7 @@ func XmmMul(a, b [4]float32) [4]float32 {
 	return out
 }
 
-func XmmDiv(a, b [4]float32) [4]float32 {
+func xmmDiv(a, b [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_div(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -50,7 +50,7 @@ func XmmDiv(a, b [4]float32) [4]float32 {
 	return out
 }
 
-func XmmSqrt(a [4]float32) [4]float32 {
+func xmmSqrt(a [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_sqrt(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -59,7 +59,7 @@ func XmmSqrt(a [4]float32) [4]float32 {
 	return out
 }
 
-func XmmRSqrt(a [4]float32) [4]float32 {
+func xmmRSqrt(a [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_rsqrt(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -68,7 +68,7 @@ func XmmRSqrt(a [4]float32) [4]float32 {
 	return out
 }
 
-func XmmRcp(a [4]float32) [4]float32 {
+func xmmRcp(a [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_rcp(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -77,7 +77,7 @@ func XmmRcp(a [4]float32) [4]float32 {
 	return out
 }
 
-func XmmMin(a, b [4]float32) [4]float32 {
+func xmmMin(a, b [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_min(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -87,7 +87,7 @@ func XmmMin(a, b [4]float32) [4]float32 {
 	return out
 }
 
-func XmmMax(a, b [4]float32) [4]float32 {
+func xmmMax(a, b [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_max(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -97,7 +97,7 @@ func XmmMax(a, b [4]float32) [4]float32 {
 	return out
 }
 
-func XmmAnd(a, b [4]float32) [4]float32 {
+func xmmAnd(a, b [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_and(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -107,7 +107,7 @@ func XmmAnd(a, b [4]float32) [4]float32 {
 	return out
 }
 
-func XmmOr(a, b [4]float32) [4]float32 {
+func xmmOr(a, b [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_or(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -117,7 +117,7 @@ func XmmOr(a, b [4]float32) [4]float32 {
 	return out
 }
 
-func XmmXor(a, b [4]float32) [4]float32 {
+func xmmXor(a, b [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_xor(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -127,7 +127,7 @@ func XmmXor(a, b [4]float32) [4]float32 {
 	return out
 }
 
-func XmmAndNot(a, b [4]float32) [4]float32 {
+func xmmAndNot(a, b [4]float32) [4]float32 {
 	out := [4]float32{}
 	C.xmm_andnot(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -137,7 +137,7 @@ func XmmAndNot(a, b [4]float32) [4]float32 {
 	return out
 }
 
-func XmmBulkConvertInt8ToFloat32(in []int8, size int) []float32 {
+func xmmBulkConvertInt8ToFloat32(in []int8, size int) []float32 {
 	out := make([]float32, size)
 	C.xmm_bulk_convert_int8_to_float32(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -147,7 +147,7 @@ func XmmBulkConvertInt8ToFloat32(in []int8, size int) []float32 {
 	return out
 }
 
-func XmmBulkConvertUint8ToFloat32(in []uint8, size int) []float32 {
+func xmmBulkConvertUint8ToFloat32(in []uint8, size int) []float32 {
 	out := make([]float32, size)
 	C.xmm_bulk_convert_uint8_to_float32(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -157,7 +157,7 @@ func XmmBulkConvertUint8ToFloat32(in []uint8, size int) []float32 {
 	return out
 }
 
-func XmmBulkConvertFloat32ToInt8(in []float32, size int) []int8 {
+func xmmBulkConvertFloat32ToInt8(in []float32, size int) []int8 {
 	out := make([]int8, size)
 	C.xmm_bulk_convert_float32_to_int8(
 		(*C.int8_t)(unsafe.Pointer(&out[0])),
@@ -167,7 +167,7 @@ func XmmBulkConvertFloat32ToInt8(in []float32, size int) []int8 {
 	return out
 }
 
-func XmmBulkConvertFloat32ToUint8(in []float32, size int) []uint8 {
+func xmmBulkConvertFloat32ToUint8(in []float32, size int) []uint8 {
 	out := make([]uint8, size)
 	C.xmm_bulk_convert_float32_to_uint8(
 		(*C.uint8_t)(unsafe.Pointer(&out[0])),
@@ -177,7 +177,7 @@ func XmmBulkConvertFloat32ToUint8(in []float32, size int) []uint8 {
 	return out
 }
 
-func XmmBulkSum(a []float32, size int) float32 {
+func xmmBulkSum(a []float32, size int) float32 {
 	out := [4]float32{}
 	C.xmm_bulk_sum(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -187,7 +187,7 @@ func XmmBulkSum(a []float32, size int) float32 {
 	return out[0] + out[1] + out[2] + out[3]
 }
 
-func XmmBulkSum2(out, a, b []float32, size int) {
+func xmmBulkSum2(out, a, b []float32, size int) {
 	C.xmm_bulk_sum2(
 		(*C.float)(unsafe.Pointer(&out[0])),
 		(*C.float)(unsafe.Pointer(&a[0])),
@@ -196,7 +196,7 @@ func XmmBulkSum2(out, a, b []float32, size int) {
 	)
 }
 
-func XmmBulkAdd(base [4]float32, in []float32, size int) []float32 {
+func xmmBulkAdd(base [4]float32, in []float32, size int) []float32 {
 	out := make([]float32, size)
 	C.xmm_bulk_add(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -207,7 +207,7 @@ func XmmBulkAdd(base [4]float32, in []float32, size int) []float32 {
 	return out
 }
 
-func XmmBulkSub(base [4]float32, in []float32, size int) []float32 {
+func xmmBulkSub(base [4]float32, in []float32, size int) []float32 {
 	out := make([]float32, size)
 	C.xmm_bulk_sub(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -218,7 +218,7 @@ func XmmBulkSub(base [4]float32, in []float32, size int) []float32 {
 	return out
 }
 
-func XmmBulkMul(base [4]float32, in []float32, size int) []float32 {
+func xmmBulkMul(base [4]float32, in []float32, size int) []float32 {
 	out := make([]float32, size)
 	C.xmm_bulk_mul(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -229,7 +229,7 @@ func XmmBulkMul(base [4]float32, in []float32, size int) []float32 {
 	return out
 }
 
-func XmmBulkDiv(base [4]float32, in []float32, size int) []float32 {
+func xmmBulkDiv(base [4]float32, in []float32, size int) []float32 {
 	out := make([]float32, size)
 	C.xmm_bulk_div(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -240,7 +240,7 @@ func XmmBulkDiv(base [4]float32, in []float32, size int) []float32 {
 	return out
 }
 
-func XmmTile4x4Sum(in []float32, size int) []float32 {
+func xmmTile4x4Sum(in []float32, size int) []float32 {
 	out := make([]float32, size/4)
 	C.xmm_tile4x4_sum(
 		(*C.float)(unsafe.Pointer(&out[0])),
@@ -250,7 +250,7 @@ func XmmTile4x4Sum(in []float32, size int) []float32 {
 	return out
 }
 
-func XmmRGBAGrayscale(in []byte, size int) []byte {
+func xmmRGBAGrayscale(in []byte, size int) []byte {
 	out := make([]byte, size)
 	C.xmm_grayscale(
 		(*C.uint8_t)(unsafe.Pointer(&out[0])),

@@ -1,175 +1,10 @@
 package x86
 
 import (
-	"bytes"
-	"image"
-	"image/color"
-	"image/png"
-	"os"
 	"reflect"
 	"testing"
-
-	_ "embed"
+	"unsafe"
 )
-
-var (
-	//go:embed testdata/src.png
-	pngImg []byte
-)
-
-func pngToRGBA(data []byte) (*image.NRGBA, error) {
-	img, err := png.Decode(bytes.NewReader(data))
-	if err != nil {
-		return nil, err
-	}
-	if i, ok := img.(*image.NRGBA); ok {
-		return i, nil
-	}
-
-	b := img.Bounds()
-	nrgba := image.NewNRGBA(b)
-	for y := b.Min.Y; y < b.Max.Y; y += 1 {
-		for x := b.Min.X; x < b.Max.X; x += 1 {
-			c := color.NRGBAModel.Convert(img.At(x, y))
-			nrgba.Set(x, y, c)
-		}
-	}
-	return nrgba, nil
-}
-
-func goGrayscaleFloat32(src *image.NRGBA) *image.NRGBA {
-	b := src.Bounds()
-	w, h := b.Dx(), b.Dy()
-
-	out := image.NewNRGBA(b)
-	for y := 0; y < h; y += 1 {
-		for x := 0; x < w; x += 1 {
-			c := src.NRGBAAt(x, y)
-			// BT.709
-			gray := byte((0.2126 * float32(c.R)) + (0.7152 * float32(c.G)) + (0.0722 * float32(c.B)))
-			out.SetNRGBA(x, y, color.NRGBA{
-				R: gray,
-				G: gray,
-				B: gray,
-				A: 0xff,
-			})
-		}
-	}
-	return out
-}
-
-func xmmGrayscaleFloat32_16(src *image.NRGBA) *image.NRGBA {
-	data := Uint8ToFloat32(src.Pix...)
-
-	f := Float32Filter{Base: [4]float32{0.2126, 0.7152, 0.0722, 0.0}}
-	filtered := f.Mul(data...)
-	pix := make([]byte, len(data))
-	for i := 0; i < len(data); i += 16 {
-		rg := Float32Add(
-			[4]float32{filtered[i+0+0], filtered[i+4+0], filtered[i+8+0], filtered[i+12+0]}, // R
-			[4]float32{filtered[i+0+1], filtered[i+4+1], filtered[i+8+1], filtered[i+12+1]}, // G
-		)
-		ba := Float32Add(
-			[4]float32{filtered[i+0+2], filtered[i+4+2], filtered[i+8+2], filtered[i+12+2]}, // B
-			[4]float32{filtered[i+0+3], filtered[i+4+3], filtered[i+8+3], filtered[i+12+3]}, // A
-		)
-		out := Float32Add(rg, ba)
-		data := Float32ToUint8(out[0], out[1], out[2], out[3])
-		pix[i+0+0] = data[0]  // R
-		pix[i+0+1] = data[0]  // G
-		pix[i+0+2] = data[0]  // B
-		pix[i+0+3] = 0xff     // A
-		pix[i+4+0] = data[1]  // R
-		pix[i+4+1] = data[1]  // G
-		pix[i+4+2] = data[1]  // B
-		pix[i+4+3] = 0xff     // A
-		pix[i+8+0] = data[2]  // R
-		pix[i+8+1] = data[2]  // G
-		pix[i+8+2] = data[2]  // B
-		pix[i+8+3] = 0xff     // A
-		pix[i+12+0] = data[3] // R
-		pix[i+12+1] = data[3] // G
-		pix[i+12+2] = data[3] // B
-		pix[i+12+3] = 0xff    // A
-	}
-
-	return &image.NRGBA{
-		Pix:    pix,
-		Stride: src.Stride,
-		Rect:   src.Rect,
-	}
-}
-
-func xmmGrayscaleFloat32_tile(src *image.NRGBA) *image.NRGBA {
-	data := Uint8ToFloat32(src.Pix...)
-	f := Float32Filter{Base: [4]float32{0.2126, 0.7152, 0.0722, 0.0}}
-	filtered := f.Mul(data...)
-	tiledGray := Float32Tile4Sum(filtered...)
-	pix := make([]byte, 0, len(src.Pix))
-	for _, gray := range Float32ToUint8(tiledGray...) {
-		pix = append(pix, gray) // R
-		pix = append(pix, gray) // G
-		pix = append(pix, gray) // B
-		pix = append(pix, 0xff) // A
-	}
-
-	return &image.NRGBA{
-		Pix:    pix,
-		Stride: src.Stride,
-		Rect:   src.Rect,
-	}
-}
-
-func xmmGrayscaleFloat32(src *image.NRGBA) *image.NRGBA {
-	initSize := len(src.Pix)
-	aligned := alignSlice(src.Pix, 16)
-	pix := XmmRGBAGrayscale(aligned, len(aligned))
-	return &image.NRGBA{
-		Pix:    pix[:initSize],
-		Stride: src.Stride,
-		Rect:   src.Rect,
-	}
-}
-
-func init() {
-	if false {
-		img, err := pngToRGBA(pngImg)
-		if err != nil {
-			panic(err)
-		}
-		a := goGrayscaleFloat32(img)
-		out, err := saveImage(a)
-		if err != nil {
-			panic(err)
-		}
-		println("go grayscale =", out)
-	}
-	if false {
-		img, err := pngToRGBA(pngImg)
-		if err != nil {
-			panic(err)
-		}
-		a := xmmGrayscaleFloat32(img)
-		out, err := saveImage(a)
-		if err != nil {
-			panic(err)
-		}
-		println("xmm grayscale =", out)
-	}
-}
-
-func saveImage(img *image.NRGBA) (string, error) {
-	out, err := os.CreateTemp("/tmp", "out*.png")
-	if err != nil {
-		return "", err
-	}
-	defer out.Close()
-
-	if err := png.Encode(out, img); err != nil {
-		return "", err
-	}
-	return out.Name(), nil
-}
 
 func BenchmarkFloat32(b *testing.B) {
 	b.Run("sum/go", func(tb *testing.B) {
@@ -187,49 +22,6 @@ func BenchmarkFloat32(b *testing.B) {
 		}
 		tb.ResetTimer()
 		_ = Float32Sum(v...)
-	})
-}
-
-func BenchmarkGrayscaleFloat32(b *testing.B) {
-	b.Run("go", func(tb *testing.B) {
-		img, err := pngToRGBA(pngImg)
-		if err != nil {
-			tb.Fatalf("%+v", err)
-		}
-		tb.ResetTimer()
-		for i := 0; i < tb.N; i += 1 {
-			_ = goGrayscaleFloat32(img)
-		}
-	})
-	b.Run("simd/small", func(tb *testing.B) {
-		img, err := pngToRGBA(pngImg)
-		if err != nil {
-			tb.Fatalf("%+v", err)
-		}
-		tb.ResetTimer()
-		for i := 0; i < tb.N; i += 1 {
-			_ = xmmGrayscaleFloat32_16(img)
-		}
-	})
-	b.Run("simd/medium", func(tb *testing.B) {
-		img, err := pngToRGBA(pngImg)
-		if err != nil {
-			tb.Fatalf("%+v", err)
-		}
-		tb.ResetTimer()
-		for i := 0; i < tb.N; i += 1 {
-			_ = xmmGrayscaleFloat32_tile(img)
-		}
-	})
-	b.Run("simd/full", func(tb *testing.B) {
-		img, err := pngToRGBA(pngImg)
-		if err != nil {
-			tb.Fatalf("%+v", err)
-		}
-		tb.ResetTimer()
-		for i := 0; i < tb.N; i += 1 {
-			_ = xmmGrayscaleFloat32(img)
-		}
 	})
 }
 
@@ -322,6 +114,222 @@ func TestFloat32Filter(t *testing.T) {
 			tt.Errorf("expect %v <> actual %v", expect, out)
 		}
 	})
+}
+
+func TestFloat32Add(t *testing.T) {
+	a := [4]float32{-1.1, 5.2, 0.0, -10.3}
+	b := [4]float32{-100.0, 20.0, 0.0, -5.0}
+	out := Float32Add(a, b)
+
+	expect := [4]float32{-101.1, 25.2, 0.0, -15.3}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestFloat32Sub(t *testing.T) {
+	a := [4]float32{-1.1, 5.2, 0.0, -10.3}
+	b := [4]float32{-100.0, 20.0, 0.0, -5.0}
+	out := Float32Sub(a, b)
+
+	expect := [4]float32{98.9, -14.8, 0.0, -5.3}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestFloat32Mul(t *testing.T) {
+	a := [4]float32{-1.1, 5.2, 0.0, -10.3}
+	b := [4]float32{-100.0, 20.0, 0.0, -5.0}
+	out := Float32Mul(a, b)
+
+	expect := [4]float32{110.0, 104.0, 0.0, 51.5}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestFloat32Div(t *testing.T) {
+	a := [4]float32{-1.1, 5.2, 0.0, -10.3}
+	b := [4]float32{-100.0, 20.0, 0.4, -5.0}
+	out := Float32Div(a, b)
+
+	expect := [4]float32{0.011, 0.26, 0.0, 2.06}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestFloat32Sqrt(t *testing.T) {
+	a := [4]float32{2.0, 4.0, 13.0, 16.0}
+	out := Float32Sqrt(a)
+
+	expect := [4]float32{1.4142135, 2, 3.6055512, 4}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestFloat32RSqrt(t *testing.T) {
+	a := [4]float32{2.0, 4.0, 13.0, 16.0}
+	out := Float32RSqrt(a)
+
+	expect := [4]float32{0.7069092, 0.49987793, 0.2772827, 0.24993896}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestFloat32Rcp(t *testing.T) {
+	a := [4]float32{1.0, 4.0, 13.0, 100}
+	out := Float32Rcp(a)
+
+	expect := [4]float32{0.99975586, 0.24993896, 0.0769043, 0.0099983215}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestFloat32Min(t *testing.T) {
+	a := [4]float32{-1.1, 5.2, 0.0, -10.3}
+	b := [4]float32{-100.0, 20.0, 0.0, -5.0}
+	out := Float32Min(a, b)
+
+	expect := [4]float32{-100.0, 5.2, 0.0, -10.3}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestFloat32Max(t *testing.T) {
+	a := [4]float32{-1.1, 5.2, 0.0, -10.3}
+	b := [4]float32{-100.0, 20.0, 0.0, -5.0}
+	out := Float32Max(a, b)
+
+	expect := [4]float32{-1.1, 20.0, 0.0, -5.0}
+	if reflect.DeepEqual(expect, out) != true {
+		t.Errorf("expect %v <> actual %v", expect, out)
+	}
+}
+
+func TestFloat32And(t *testing.T) {
+	ua := [4]uint32{
+		0b0_00000001_00000000000000000000000,
+		0b0_11000001_00000000000000000000000,
+		0,
+		0b0_10000001_10010000000000000000010,
+	}
+	ub := [4]uint32{
+		0b0_00000011_00000000000000000000000,
+		0b0_10000011_00000000000000000000000,
+		0,
+		0b0_10000000_11110000000000000000000,
+	}
+	ue := [4]uint32{
+		0b0_00000001_00000000000000000000000,
+		0b0_10000001_00000000000000000000000,
+		0,
+		0b0_10000000_10010000000000000000000,
+	}
+
+	a := *(*[4]float32)(unsafe.Pointer(&ua[0]))
+	b := *(*[4]float32)(unsafe.Pointer(&ub[0]))
+	e := *(*[4]float32)(unsafe.Pointer(&ue[0]))
+
+	out := Float32And(a, b)
+	if reflect.DeepEqual(e, out) != true {
+		t.Errorf("expect %v <> actual %v", e, out)
+	}
+}
+
+func TestFloat32Or(t *testing.T) {
+	ua := [4]uint32{
+		0b0_00000001_00000000000000000000000,
+		0b0_11000001_00000000000000000000000,
+		0,
+		0b0_10000001_10010000000000000000010,
+	}
+	ub := [4]uint32{
+		0b0_00000011_00000000000000000000000,
+		0b0_10000011_00000000000000000000000,
+		0,
+		0b0_10000000_11110000000000000000000,
+	}
+	ue := [4]uint32{
+		0b0_00000011_00000000000000000000000,
+		0b0_11000011_00000000000000000000000,
+		0,
+		0b0_10000001_11110000000000000000010,
+	}
+
+	a := *(*[4]float32)(unsafe.Pointer(&ua[0]))
+	b := *(*[4]float32)(unsafe.Pointer(&ub[0]))
+	e := *(*[4]float32)(unsafe.Pointer(&ue[0]))
+
+	out := Float32Or(a, b)
+	if reflect.DeepEqual(e, out) != true {
+		t.Errorf("expect %v <> actual %v", e, out)
+	}
+}
+
+func TestFloat32Xor(t *testing.T) {
+	ua := [4]uint32{
+		0b0_00000001_00000000000000000000000,
+		0b0_11000001_00000000000000000000000,
+		0,
+		0b0_10000001_10010000000000000000010,
+	}
+	ub := [4]uint32{
+		0b0_00000011_00000000000000000000000,
+		0b0_10000011_00000000000000000000000,
+		0,
+		0b0_10000000_11110000000000000000000,
+	}
+	ue := [4]uint32{
+		0b0_00000010_00000000000000000000000,
+		0b0_01000010_00000000000000000000000,
+		0,
+		0b0_00000001_01100000000000000000010,
+	}
+
+	a := *(*[4]float32)(unsafe.Pointer(&ua[0]))
+	b := *(*[4]float32)(unsafe.Pointer(&ub[0]))
+	e := *(*[4]float32)(unsafe.Pointer(&ue[0]))
+
+	out := Float32Xor(a, b)
+	if reflect.DeepEqual(e, out) != true {
+		t.Errorf("expect %v <> actual %v", e, out)
+	}
+}
+
+func TestFloat32AndNot(t *testing.T) {
+	ua := [4]uint32{
+		0b0_00000001_00000000000000000000000,
+		0b0_11000001_00000000000000000000000,
+		0,
+		0b0_10000001_10010000000000000000010,
+	}
+	ub := [4]uint32{
+		0b0_00000011_00000000000000000000000,
+		0b0_10000011_00000000000000000000000,
+		0,
+		0b0_10000000_11110000000000000000000,
+	}
+	ue := [4]uint32{
+		0b0_00000010_00000000000000000000000,
+		0b0_00000010_00000000000000000000000,
+		0,
+		0b0_00000000_01100000000000000000000,
+	}
+
+	a := *(*[4]float32)(unsafe.Pointer(&ua[0]))
+	b := *(*[4]float32)(unsafe.Pointer(&ub[0]))
+	e := *(*[4]float32)(unsafe.Pointer(&ue[0]))
+
+	out := Float32AndNot(a, b)
+	if reflect.DeepEqual(e, out) != true {
+		t.Errorf("expect %v <> actual %v", e, out)
+	}
 }
 
 func TestInt8ToFloat32(t *testing.T) {
