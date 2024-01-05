@@ -1,5 +1,35 @@
 package x86
 
+import _ "unsafe"
+
+//go:linkname Int32Add github.com/octu0/go-intrin/x86.immAddInt32
+//go:noescape
+func Int32Add(a, b [8]int32) [8]int32
+
+//go:linkname Int32Sub github.com/octu0/go-intrin/x86.immSubInt32
+//go:noescape
+func Int32Sub(a, b [8]int32) [8]int32
+
+//go:linkname Int32Abs github.com/octu0/go-intrin/x86.immAbsInt32
+//go:noescape
+func Int32Abs(a [8]int32) [8]int32
+
+//go:linkname Int32And github.com/octu0/go-intrin/x86.immAndInt32
+//go:noescape
+func Int32And(a, b [8]int32) [8]int32
+
+//go:linkname Int32Or github.com/octu0/go-intrin/x86.immOrInt32
+//go:noescape
+func Int32Or(a, b [8]int32) [8]int32
+
+//go:linkname Int32Xor github.com/octu0/go-intrin/x86.immXorInt32
+//go:noescape
+func Int32Xor(a, b [8]int32) [8]int32
+
+//go:linkname Int32AndNot github.com/octu0/go-intrin/x86.immAndNotInt32
+//go:noescape
+func Int32AndNot(a, b [8]int32) [8]int32
+
 func Int32ToFloat64(values ...int32) []float64 {
 	if 1024 < len(values) {
 		return int32ToFloat64M256(values)
