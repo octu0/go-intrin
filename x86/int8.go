@@ -121,29 +121,85 @@ func uint8SumNative(values []uint8) uint8 {
 }
 
 func Int8ToFloat32(values ...int8) []float32 {
+	if 1024 < len(values) {
+		return int8ToFloat32M256(values)
+	}
+	return int8ToFloat32M128(values)
+}
+
+func int8ToFloat32M128(values []int8) []float32 {
 	initSize := len(values)
 	aligned := alignSlice(values, 4)
 	converted := xmmBulkConvertInt8ToFloat32(aligned, len(aligned))
 	return converted[:initSize]
 }
 
+func int8ToFloat32M256(values []int8) []float32 {
+	initSize := len(values)
+	aligned := alignSlice(values, 8)
+	converted := immBulkConvertInt8ToFloat32(aligned, len(aligned))
+	return converted[:initSize]
+}
+
 func Uint8ToFloat32(values ...uint8) []float32 {
+	if 1024 < len(values) {
+		return uint8ToFloat32M256(values)
+	}
+	return uint8ToFloat32M128(values)
+}
+
+func uint8ToFloat32M128(values []uint8) []float32 {
 	initSize := len(values)
 	aligned := alignSlice(values, 4)
 	converted := xmmBulkConvertUint8ToFloat32(aligned, len(aligned))
 	return converted[:initSize]
 }
 
+func uint8ToFloat32M256(values []uint8) []float32 {
+	initSize := len(values)
+	aligned := alignSlice(values, 8)
+	converted := immBulkConvertUint8ToFloat32(aligned, len(aligned))
+	return converted[:initSize]
+}
+
 func Float32ToInt8(values ...float32) []int8 {
+	if 1024 < len(values) {
+		return float32ToInt8M256(values)
+	}
+	return float32ToInt8M128(values)
+}
+
+func float32ToInt8M128(values []float32) []int8 {
 	initSize := len(values)
 	aligned := alignSlice(values, 4)
 	converted := xmmBulkConvertFloat32ToInt8(aligned, len(aligned))
 	return converted[:initSize]
 }
 
+func float32ToInt8M256(values []float32) []int8 {
+	initSize := len(values)
+	aligned := alignSlice(values, 32)
+	converted := immBulkConvertFloat32ToInt8(aligned, len(aligned))
+	return converted[:initSize]
+}
+
 func Float32ToUint8(values ...float32) []uint8 {
+	if 1024 < len(values) {
+		return float32ToUint8M256(values)
+	}
+	return float32ToUint8M128(values)
+}
+
+func float32ToUint8M128(values []float32) []uint8 {
 	initSize := len(values)
 	aligned := alignSlice(values, 4)
 	converted := xmmBulkConvertFloat32ToUint8(aligned, len(aligned))
+	return converted[:initSize]
+}
+
+func float32ToUint8M256(values []float32) []uint8 {
+	initSize := len(values)
+	aligned := alignSlice(values, 32)
+	converted := immBulkConvertFloat32ToUint8(aligned, len(aligned))
 	return converted[:initSize]
 }

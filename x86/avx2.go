@@ -291,3 +291,53 @@ func immBulkSumUint8(in []uint8, size int) uint8 {
 		out[24] + out[25] + out[26] + out[27] +
 		out[28] + out[29] + out[30] + out[31]
 }
+
+func immBulkConvertInt8ToFloat32(in []int8, size int) []float32 {
+	out := make([]float32, size)
+	C.imm_bulk_convert_int8_to_float32(
+		(*C.float)(unsafe.Pointer(&out[0])),
+		(*C.int8_t)(unsafe.Pointer(&in[0])),
+		C.int(size),
+	)
+	return out
+}
+
+func immBulkConvertUint8ToFloat32(in []uint8, size int) []float32 {
+	out := make([]float32, size)
+	C.imm_bulk_convert_uint8_to_float32(
+		(*C.float)(unsafe.Pointer(&out[0])),
+		(*C.uint8_t)(unsafe.Pointer(&in[0])),
+		C.int(size),
+	)
+	return out
+}
+
+func immBulkConvertFloat32ToInt8(in []float32, size int) []int8 {
+	out := make([]int8, size)
+	C.imm_bulk_convert_float32_to_int8(
+		(*C.int8_t)(unsafe.Pointer(&out[0])),
+		(*C.float)(unsafe.Pointer(&in[0])),
+		C.int(size),
+	)
+	return out
+}
+
+func immBulkConvertFloat32ToUint8(in []float32, size int) []uint8 {
+	out := make([]uint8, size)
+	C.imm_bulk_convert_float32_to_uint8(
+		(*C.uint8_t)(unsafe.Pointer(&out[0])),
+		(*C.float)(unsafe.Pointer(&in[0])),
+		C.int(size),
+	)
+	return out
+}
+
+func immRGBAGrayscale(in []byte, size int) []byte {
+	out := make([]byte, size)
+	C.imm_grayscale(
+		(*C.uint8_t)(unsafe.Pointer(&out[0])),
+		(*C.uint8_t)(unsafe.Pointer(&in[0])),
+		C.int(size),
+	)
+	return out
+}

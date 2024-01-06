@@ -17,7 +17,7 @@ static void emm_add_int8(int8_t *out, int8_t *a, int8_t *b) {
   );
   // adds = saturation arithmetic
   __m128i r = _mm_adds_epi8(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_sub_int8(int8_t *out, int8_t *a, int8_t *b) {
@@ -35,7 +35,7 @@ static void emm_sub_int8(int8_t *out, int8_t *a, int8_t *b) {
   );
   // subs = saturation arithmetic
   __m128i r = _mm_subs_epi8(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_add_uint8(uint8_t *out, uint8_t *a, uint8_t *b) {
@@ -53,7 +53,7 @@ static void emm_add_uint8(uint8_t *out, uint8_t *a, uint8_t *b) {
   );
   // adds = saturation arithmetic
   __m128i r = _mm_adds_epu8(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_sub_uint8(uint8_t *out, uint8_t *a, uint8_t *b) {
@@ -71,7 +71,7 @@ static void emm_sub_uint8(uint8_t *out, uint8_t *a, uint8_t *b) {
   );
   // subs = saturation arithmetic
   __m128i r = _mm_subs_epu8(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_avg_uint8(uint8_t *out, uint8_t *a, uint8_t *b) {
@@ -88,7 +88,7 @@ static void emm_avg_uint8(uint8_t *out, uint8_t *a, uint8_t *b) {
     b[12], b[13], b[14], b[15]
   );
   __m128i r = _mm_avg_epu8(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_max_uint8(uint8_t *out, uint8_t *a, uint8_t *b) {
@@ -105,7 +105,7 @@ static void emm_max_uint8(uint8_t *out, uint8_t *a, uint8_t *b) {
     b[12], b[13], b[14], b[15]
   );
   __m128i r = _mm_max_epu8(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_min_uint8(uint8_t *out, uint8_t *a, uint8_t *b) {
@@ -122,7 +122,7 @@ static void emm_min_uint8(uint8_t *out, uint8_t *a, uint8_t *b) {
     b[12], b[13], b[14], b[15]
   );
   __m128i r = _mm_min_epu8(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_add_int16(int16_t *out, int16_t *a, int16_t *b) {
@@ -136,7 +136,7 @@ static void emm_add_int16(int16_t *out, int16_t *a, int16_t *b) {
   );
   // adds = saturation arithmetic
   __m128i r = _mm_adds_epi16(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_sub_int16(int16_t *out, int16_t *a, int16_t *b) {
@@ -150,7 +150,7 @@ static void emm_sub_int16(int16_t *out, int16_t *a, int16_t *b) {
   );
   // subs = saturation arithmetic
   __m128i r = _mm_subs_epi16(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_max_int16(int16_t *out, int16_t *a, int16_t *b) {
@@ -163,7 +163,7 @@ static void emm_max_int16(int16_t *out, int16_t *a, int16_t *b) {
     b[4],  b[5],  b[6],  b[7]
   );
   __m128i r = _mm_max_epi16(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_min_int16(int16_t *out, int16_t *a, int16_t *b) {
@@ -176,7 +176,7 @@ static void emm_min_int16(int16_t *out, int16_t *a, int16_t *b) {
     b[4],  b[5],  b[6],  b[7]
   );
   __m128i r = _mm_min_epi16(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_madd_int16(int32_t *out, int16_t *a, int16_t *b) {
@@ -189,7 +189,7 @@ static void emm_madd_int16(int32_t *out, int16_t *a, int16_t *b) {
     b[4],  b[5],  b[6],  b[7]
   );
   __m128i r = _mm_madd_epi16(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_add_uint16(uint16_t *out, uint16_t *a, uint16_t *b) {
@@ -203,7 +203,7 @@ static void emm_add_uint16(uint16_t *out, uint16_t *a, uint16_t *b) {
   );
   // adds = saturation arithmetic
   __m128i r = _mm_adds_epu16(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_sub_uint16(uint16_t *out, uint16_t *a, uint16_t *b) {
@@ -217,7 +217,7 @@ static void emm_sub_uint16(uint16_t *out, uint16_t *a, uint16_t *b) {
   );
   // subs = saturation arithmetic
   __m128i r = _mm_subs_epu16(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_avg_uint16(uint16_t *out, uint16_t *a, uint16_t *b) {
@@ -230,83 +230,83 @@ static void emm_avg_uint16(uint16_t *out, uint16_t *a, uint16_t *b) {
     b[4],  b[5],  b[6],  b[7]
   );
   __m128i r = _mm_avg_epu16(ma, mb);
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_add_float64(double *out, double *a, double *b) {
   __m128d ma = _mm_setr_pd(a[0], a[1]);
   __m128d mb = _mm_setr_pd(b[0], b[1]);
   __m128d r = _mm_add_pd(ma, mb);
-  _mm_store_pd(out, r);
+  _mm_storeu_pd(out, r);
 }
 
 static void emm_sub_float64(double *out, double *a, double *b) {
   __m128d ma = _mm_setr_pd(a[0], a[1]);
   __m128d mb = _mm_setr_pd(b[0], b[1]);
   __m128d r = _mm_sub_pd(ma, mb);
-  _mm_store_pd(out, r);
+  _mm_storeu_pd(out, r);
 }
 
 static void emm_mul_float64(double *out, double *a, double *b) {
   __m128d ma = _mm_setr_pd(a[0], a[1]);
   __m128d mb = _mm_setr_pd(b[0], b[1]);
   __m128d r = _mm_mul_pd(ma, mb);
-  _mm_store_pd(out, r);
+  _mm_storeu_pd(out, r);
 }
 
 static void emm_div_float64(double *out, double *a, double *b) {
   __m128d ma = _mm_setr_pd(a[0], a[1]);
   __m128d mb = _mm_setr_pd(b[0], b[1]);
   __m128d r = _mm_div_pd(ma, mb);
-  _mm_store_pd(out, r);
+  _mm_storeu_pd(out, r);
 }
 
 static void emm_sqrt_float64(double *out, double *a) {
   __m128d ma = _mm_setr_pd(a[0], a[1]);
   __m128d r = _mm_sqrt_pd(ma);
-  _mm_store_pd(out, r);
+  _mm_storeu_pd(out, r);
 }
 
 static void emm_max_float64(double *out, double *a, double *b) {
   __m128d ma = _mm_setr_pd(a[0], a[1]);
   __m128d mb = _mm_setr_pd(b[0], b[1]);
   __m128d r = _mm_max_pd(ma, mb);
-  _mm_store_pd(out, r);
+  _mm_storeu_pd(out, r);
 }
 
 static void emm_min_float64(double *out, double *a, double *b) {
   __m128d ma = _mm_setr_pd(a[0], a[1]);
   __m128d mb = _mm_setr_pd(b[0], b[1]);
   __m128d r = _mm_min_pd(ma, mb);
-  _mm_store_pd(out, r);
+  _mm_storeu_pd(out, r);
 }
 
 static void emm_and_float64(double *out, double *a, double *b) {
   __m128d ma = _mm_setr_pd(a[0], a[1]);
   __m128d mb = _mm_setr_pd(b[0], b[1]);
   __m128d r = _mm_and_pd(ma, mb);
-  _mm_store_pd(out, r);
+  _mm_storeu_pd(out, r);
 }
 
 static void emm_or_float64(double *out, double *a, double *b) {
   __m128d ma = _mm_setr_pd(a[0], a[1]);
   __m128d mb = _mm_setr_pd(b[0], b[1]);
   __m128d r = _mm_or_pd(ma, mb);
-  _mm_store_pd(out, r);
+  _mm_storeu_pd(out, r);
 }
 
 static void emm_xor_float64(double *out, double *a, double *b) {
   __m128d ma = _mm_setr_pd(a[0], a[1]);
   __m128d mb = _mm_setr_pd(b[0], b[1]);
   __m128d r = _mm_xor_pd(ma, mb);
-  _mm_store_pd(out, r);
+  _mm_storeu_pd(out, r);
 }
 
 static void emm_andnot_float64(double *out, double *a, double *b) {
   __m128d ma = _mm_setr_pd(a[0], a[1]);
   __m128d mb = _mm_setr_pd(b[0], b[1]);
   __m128d r = _mm_andnot_pd(ma, mb);
-  _mm_store_pd(out, r);
+  _mm_storeu_pd(out, r);
 }
 
 static void emm_bulk_sum_int8(int8_t *out, int8_t *in, int size) {
@@ -325,7 +325,7 @@ static void emm_bulk_sum_int8(int8_t *out, int8_t *in, int size) {
     );
     r = _mm_adds_epi8(ma, r);
   }
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_bulk_sum_uint8(uint8_t *out, uint8_t *in, int size) {
@@ -344,7 +344,7 @@ static void emm_bulk_sum_uint8(uint8_t *out, uint8_t *in, int size) {
     );
     r = _mm_adds_epu8(ma, r);
   }
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_bulk_sum_int16(int16_t *out, int16_t *in, int size) {
@@ -359,7 +359,7 @@ static void emm_bulk_sum_int16(int16_t *out, int16_t *in, int size) {
     );
     r = _mm_adds_epi16(ma, r);
   }
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_bulk_sum_uint16(uint16_t *out, uint16_t *in, int size) {
@@ -374,14 +374,14 @@ static void emm_bulk_sum_uint16(uint16_t *out, uint16_t *in, int size) {
     );
     r = _mm_adds_epu16(ma, r);
   }
-  _mm_store_si128((__m128i *) out, r);
+  _mm_storeu_si128((__m128i *) out, r);
 }
 
 static void emm_bulk_convert_int32_to_float32(float *out, int32_t *in, int size) {
   for(int i = 0; i < size; i += 4) {
     __m128i ma = _mm_setr_epi32(in[i + 0], in[i + 1], in[i + 2], in[i + 3]);
     __m128 r = _mm_cvtepi32_ps(ma);
-    _mm_store_ps(out + i, r);
+    _mm_stream_ps(out + i, r);
   }
 }
 

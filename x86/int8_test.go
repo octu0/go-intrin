@@ -476,34 +476,69 @@ func TestUint8Sum(t *testing.T) {
 }
 
 func TestInt8ToFloat32(t *testing.T) {
-	out := Int8ToFloat32(1, 2, 127, -128, -1, 0)
-	expect := []float32{1.0, 2.0, 127.0, -128.0, -1.0, 0.0}
-	if reflect.DeepEqual(expect, out) != true {
-		t.Errorf("expect %v <> actual %v", expect, out)
-	}
+	t.Run("m128", func(tt *testing.T) {
+		out := int8ToFloat32M128([]int8{1, 2, 127, -128, -1, 0})
+		expect := []float32{1.0, 2.0, 127.0, -128.0, -1.0, 0.0}
+		if reflect.DeepEqual(expect, out) != true {
+			tt.Errorf("expect %v <> actual %v", expect, out)
+		}
+	})
+	t.Run("m256", func(tt *testing.T) {
+		out := int8ToFloat32M256([]int8{1, 2, 127, -128, -1, 0})
+		expect := []float32{1.0, 2.0, 127.0, -128.0, -1.0, 0.0}
+		if reflect.DeepEqual(expect, out) != true {
+			tt.Errorf("expect %v <> actual %v", expect, out)
+		}
+	})
 }
 
 func TestUint8ToFloat32(t *testing.T) {
-	out := Uint8ToFloat32(1, 2, 127, 255, 128, 0)
-	expect := []float32{1.0, 2.0, 127.0, 255.0, 128.0, 0.0}
-	if reflect.DeepEqual(expect, out) != true {
-		t.Errorf("expect %v <> actual %v", expect, out)
-	}
+	t.Run("m128", func(t *testing.T) {
+		out := uint8ToFloat32M128([]uint8{1, 2, 127, 255, 128, 0})
+		expect := []float32{1.0, 2.0, 127.0, 255.0, 128.0, 0.0}
+		if reflect.DeepEqual(expect, out) != true {
+			t.Errorf("expect %v <> actual %v", expect, out)
+		}
+	})
+	t.Run("m256", func(t *testing.T) {
+		out := uint8ToFloat32M256([]uint8{1, 2, 127, 255, 128, 0})
+		expect := []float32{1.0, 2.0, 127.0, 255.0, 128.0, 0.0}
+		if reflect.DeepEqual(expect, out) != true {
+			t.Errorf("expect %v <> actual %v", expect, out)
+		}
+	})
 }
 
 func TestFloat32ToInt8(t *testing.T) {
-	out := Float32ToInt8(1.0, 2.0, 127.0, 255.0, -128.0, -1)
-	expect := []int8{1, 2, 127, 127, -128, -1}
-	if reflect.DeepEqual(expect, out) != true {
-		t.Errorf("expect %v <> actual %v", expect, out)
-	}
+	t.Run("m128", func(tt *testing.T) {
+		out := float32ToInt8M128([]float32{1.0, 2.0, 127.0, 255.0, -128.0, -1})
+		expect := []int8{1, 2, 127, 127, -128, -1}
+		if reflect.DeepEqual(expect, out) != true {
+			t.Errorf("expect %v <> actual %v", expect, out)
+		}
+	})
+	t.Run("m256", func(tt *testing.T) {
+		out := float32ToInt8M256([]float32{1.0, 2.0, 127.0, 255.0, -128.0, -1})
+		expect := []int8{1, 2, 127, 127, -128, -1}
+		if reflect.DeepEqual(expect, out) != true {
+			t.Errorf("expect %v <> actual %v", expect, out)
+		}
+	})
 }
 
 func TestFloat32ToUint8(t *testing.T) {
-	out := Float32ToUint8(1.0, 2.0, 127.0, 255.0, -128.0, -1, -2, 0)
-	//expect := []uint8{1, 2, 127, 255, 128, 255, 254, 0}
-	expect := []uint8{1, 2, 127, 127, 128, 255, 254, 0}
-	if reflect.DeepEqual(expect, out) != true {
-		t.Errorf("expect %v <> actual %v", expect, out)
-	}
+	t.Run("m128", func(tt *testing.T) {
+		out := float32ToUint8M128([]float32{1.0, 2.0, 127.0, 255.0, -128.0, -1, -2, 0})
+		expect := []uint8{1, 2, 127, 127, 128, 255, 254, 0}
+		if reflect.DeepEqual(expect, out) != true {
+			t.Errorf("expect %v <> actual %v", expect, out)
+		}
+	})
+	t.Run("m256", func(tt *testing.T) {
+		out := float32ToUint8M256([]float32{1.0, 2.0, 127.0, 255.0, -128.0, -1, -2, 0})
+		expect := []uint8{1, 2, 127, 127, 128, 255, 254, 0}
+		if reflect.DeepEqual(expect, out) != true {
+			t.Errorf("expect %v <> actual %v", expect, out)
+		}
+	})
 }
