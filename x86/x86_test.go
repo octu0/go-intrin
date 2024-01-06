@@ -120,10 +120,21 @@ func xmmGrayscaleFloat32_tile(src *image.NRGBA) *image.NRGBA {
 	}
 }
 
-func xmmGrayscaleFloat32(src *image.NRGBA) *image.NRGBA {
+func xmmGrayscale(src *image.NRGBA) *image.NRGBA {
 	initSize := len(src.Pix)
 	aligned := alignSlice(src.Pix, 16)
 	pix := xmmRGBAGrayscale(aligned, len(aligned))
+	return &image.NRGBA{
+		Pix:    pix[:initSize],
+		Stride: src.Stride,
+		Rect:   src.Rect,
+	}
+}
+
+func immGrayscale(src *image.NRGBA) *image.NRGBA {
+	initSize := len(src.Pix)
+	aligned := alignSlice(src.Pix, 64)
+	pix := immRGBAGrayscale(aligned, len(aligned))
 	return &image.NRGBA{
 		Pix:    pix[:initSize],
 		Stride: src.Stride,
@@ -144,7 +155,7 @@ func saveImage(img *image.NRGBA) (string, error) {
 	return out.Name(), nil
 }
 
-func BenchmarkGrayscaleFloat32(b *testing.B) {
+func BenchmarkGrayscale(b *testing.B) {
 	b.Run("go", func(tb *testing.B) {
 		img, err := pngToRGBA(pngImg)
 		if err != nil {
@@ -182,9 +193,21 @@ func BenchmarkGrayscaleFloat32(b *testing.B) {
 		}
 		tb.ResetTimer()
 		for i := 0; i < tb.N; i += 1 {
-			_ = xmmGrayscaleFloat32(img)
+			_ = xmmGrayscale(img)
 		}
 	})
+	/*
+	  b.Run("simd/full-avx2", func(tb *testing.B) {
+			img, err := pngToRGBA(pngImg)
+			if err != nil {
+				tb.Fatalf("%+v", err)
+			}
+			tb.ResetTimer()
+			for i := 0; i < tb.N; i += 1 {
+				_ = immGrayscale(img)
+			}
+		})
+	*/
 }
 
 func TestAlignSlice(t *testing.T) {
@@ -235,11 +258,23 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
-		a := xmmGrayscaleFloat32(img)
+		a := xmmGrayscale(img)
 		out, err := saveImage(a)
 		if err != nil {
 			panic(err)
 		}
 		println("xmm grayscale =", out)
+	}
+	if false {
+		img, err := pngToRGBA(pngImg)
+		if err != nil {
+			panic(err)
+		}
+		a := immGrayscale(img)
+		out, err := saveImage(a)
+		if err != nil {
+			panic(err)
+		}
+		println("imm grayscale =", out)
 	}
 }

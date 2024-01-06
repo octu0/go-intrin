@@ -6,88 +6,88 @@ static void xmm_add(float *out, float *a, float *b) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 mb = _mm_setr_ps(b[0], b[1], b[2], b[3]);
   __m128 r = _mm_add_ps(ma, mb);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_sub(float *out, float *a, float *b) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 mb = _mm_setr_ps(b[0], b[1], b[2], b[3]);
   __m128 r = _mm_sub_ps(ma, mb);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_mul(float *out, float *a, float *b) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 mb = _mm_setr_ps(b[0], b[1], b[2], b[3]);
   __m128 r = _mm_mul_ps(ma, mb);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_div(float *out, float *a, float *b) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 mb = _mm_setr_ps(b[0], b[1], b[2], b[3]);
   __m128 r = _mm_div_ps(ma, mb);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_sqrt(float *out, float *a) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 r = _mm_sqrt_ps(ma);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_rsqrt(float *out, float *a) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 r = _mm_rsqrt_ps(ma);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_rcp(float *out, float *a) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 r = _mm_rcp_ps(ma);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_min(float *out, float *a, float *b) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 mb = _mm_setr_ps(b[0], b[1], b[2], b[3]);
   __m128 r = _mm_min_ps(ma, mb);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_max(float *out, float *a, float *b) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 mb = _mm_setr_ps(b[0], b[1], b[2], b[3]);
   __m128 r = _mm_max_ps(ma, mb);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_and(float *out, float *a, float *b) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 mb = _mm_setr_ps(b[0], b[1], b[2], b[3]);
   __m128 r = _mm_and_ps(ma, mb);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_or(float *out, float *a, float *b) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 mb = _mm_setr_ps(b[0], b[1], b[2], b[3]);
   __m128 r = _mm_or_ps(ma, mb);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_xor(float *out, float *a, float *b) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 mb = _mm_setr_ps(b[0], b[1], b[2], b[3]);
   __m128 r = _mm_xor_ps(ma, mb);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_andnot(float *out, float *a, float *b) {
   __m128 ma = _mm_setr_ps(a[0], a[1], a[2], a[3]);
   __m128 mb = _mm_setr_ps(b[0], b[1], b[2], b[3]);
   __m128 r = _mm_andnot_ps(ma, mb);
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_bulk_convert_int8_to_float32(float *out, int8_t *in, int size) {
@@ -134,7 +134,7 @@ static void xmm_bulk_sum(float *out, float *a, int size) {
     __m128 ma = _mm_setr_ps(a[i + 0], a[i + 1], a[i + 2], a[i + 3]);
     r = _mm_add_ps(ma, r);
   }
-  _mm_store_ps(out, r);
+  _mm_storeu_ps(out, r);
 }
 
 static void xmm_bulk_sum2(float *out, float *a, float *b, int size) {

@@ -381,7 +381,7 @@ static void emm_bulk_convert_int32_to_float32(float *out, int32_t *in, int size)
   for(int i = 0; i < size; i += 4) {
     __m128i ma = _mm_setr_epi32(in[i + 0], in[i + 1], in[i + 2], in[i + 3]);
     __m128 r = _mm_cvtepi32_ps(ma);
-    _mm_storeu_ps(out + i, r);
+    _mm_stream_ps(out + i, r);
   }
 }
 
@@ -397,7 +397,7 @@ static void emm_bulk_convert_int32_to_float64(double *out, int32_t *in, int size
   for(int i = 0; i < size; i += 2) {
     __m64 ma = _mm_setr_pi32(in[i + 0], in[i + 1]);
     __m128d r = _mm_cvtpi32_pd(ma);
-    _mm_storeu_pd(out + i, r);
+    _mm_store_pd(out + i, r);
   }
 }
 

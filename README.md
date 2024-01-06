@@ -5,7 +5,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/octu0/go-intrin)](https://goreportcard.com/report/github.com/octu0/go-intrin)
 [![Releases](https://img.shields.io/github/v/release/octu0/go-intrin)](https://github.com/octu0/go-intrin/releases)
 
-`go-intrin` is a Go library that provides a simple interface to SIMD (MMX/SSE/SSE2) instructions.
+`go-intrin` is a Go library that provides a simple interface to SIMD (MMX/SSE/SSE2/AVX/AVX2) instructions.
 currently supports Intel x86.
 
 ## Installation
