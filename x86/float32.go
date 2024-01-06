@@ -2,38 +2,6 @@ package x86
 
 import _ "unsafe"
 
-type Float32Filter struct {
-	Base [4]float32
-}
-
-func (f *Float32Filter) Add(values ...float32) []float32 {
-	initSize := len(values)
-	aligned := alignSlice(values, 4)
-	res := xmmBulkAdd(f.Base, aligned, len(aligned))
-	return res[:initSize]
-}
-
-func (f *Float32Filter) Sub(values ...float32) []float32 {
-	initSize := len(values)
-	aligned := alignSlice(values, 4)
-	res := xmmBulkSub(f.Base, aligned, len(aligned))
-	return res[:initSize]
-}
-
-func (f *Float32Filter) Mul(values ...float32) []float32 {
-	initSize := len(values)
-	aligned := alignSlice(values, 4)
-	res := xmmBulkMul(f.Base, aligned, len(aligned))
-	return res[:initSize]
-}
-
-func (f *Float32Filter) Div(values ...float32) []float32 {
-	initSize := len(values)
-	aligned := alignSlice(values, 4)
-	res := xmmBulkDiv(f.Base, aligned, len(aligned))
-	return res[:initSize]
-}
-
 //go:linkname Float32Add github.com/octu0/go-intrin/x86.xmmAdd
 //go:noescape
 func Float32Add(a, b [4]float32) [4]float32
@@ -161,18 +129,34 @@ func float32SumNative(values []float32) float32 {
 	return sum
 }
 
-func convertFloat32[T number](values []T) []float32 {
-	out := make([]float32, len(values))
-	for i, v := range values {
-		out[i] = float32(v)
-	}
-	return out
+type Float32Filter struct {
+	Base [4]float32
 }
 
-func convertUint8[T number](values []T) []uint8 {
-	out := make([]uint8, len(values))
-	for i, v := range values {
-		out[i] = uint8(v)
-	}
-	return out
+func (f *Float32Filter) Add(values ...float32) []float32 {
+	initSize := len(values)
+	aligned := alignSlice(values, 4)
+	res := xmmBulkAdd(f.Base, aligned, len(aligned))
+	return res[:initSize]
+}
+
+func (f *Float32Filter) Sub(values ...float32) []float32 {
+	initSize := len(values)
+	aligned := alignSlice(values, 4)
+	res := xmmBulkSub(f.Base, aligned, len(aligned))
+	return res[:initSize]
+}
+
+func (f *Float32Filter) Mul(values ...float32) []float32 {
+	initSize := len(values)
+	aligned := alignSlice(values, 4)
+	res := xmmBulkMul(f.Base, aligned, len(aligned))
+	return res[:initSize]
+}
+
+func (f *Float32Filter) Div(values ...float32) []float32 {
+	initSize := len(values)
+	aligned := alignSlice(values, 4)
+	res := xmmBulkDiv(f.Base, aligned, len(aligned))
+	return res[:initSize]
 }
